@@ -1,4 +1,4 @@
-# Fusion
+# PDFusion
 Fusion is a complete rewrite of [PDF_Merger](https://www.github.com/TsimpDim/Pdf_Merger) in Java using iText 7 Community.
 
 ### Status
@@ -11,9 +11,9 @@ Thus, with my new-found knowledge of Java (established through school work) i'm 
 
 ### Goals
 As with PDF_Merger, the goal here is to create an application which will allow the user to  
- • Merge (both fully and selectively)  
- • Watermark  
+ ï¿½ Merge (both fully and selectively)  
+ ï¿½ Watermark  
 and  
- • Split  
+ ï¿½ Split  
  
 PDF files.
