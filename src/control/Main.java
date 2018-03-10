@@ -1,10 +1,12 @@
+package control;
 import gui.MainWindow;
 
 public class Main {
 
 	public static void main(String[] args) {
 
-		new MainWindow();
+		PdfWorkspace workspace = new PdfWorkspace();
+		new MainWindow(workspace);
 
 	}
 

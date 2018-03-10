@@ -1,6 +1,8 @@
+package control;
+import java.io.File;
 import java.util.ArrayList;
 
-public class PdfFile {
+public class PdfFile extends File{
 
 	private String path;
 	private ArrayList<Integer> pages = new ArrayList<Integer>();
@@ -8,13 +10,14 @@ public class PdfFile {
 	private int fileId;
 	
 	/***
-	 * Initialize a PdfFile with all properties
-	 * @param path
-	 * @param pages
-	 * @param toMerge
+	 * Initalize a new PdfFile with page restrictions
+	 * @param path The file path
+	 * @param pages An ArrayList with all the pages to use. Set null for full pages.
+	 * @param toMerge 
 	 * @param fileId
 	 */
 	public PdfFile(String path, ArrayList<Integer> pages, Boolean toMerge, int fileId) {
+		super(path);
 		this.path = path;
 		this.pages = pages;
 		this.toMerge = toMerge;
@@ -22,17 +25,19 @@ public class PdfFile {
 	}
 	
 	/***
-	 * Initialize a PdfFile without the pages ArrayList - i.e use all the pages of the file
-	 * @param path
-	 * @param toMerge
+	 * Initalize a new PdfFile without page restrictions
+	 * @param path The file path
+	 * @param toMerge 
 	 * @param fileId
 	 */
 	public PdfFile(String path, Boolean toMerge, int fileId) {
+		super(path);
 		this.path = path;
 		this.pages = null;
 		this.toMerge = toMerge;
 		this.fileId = fileId;
 	}
+	
 
 	public String getPath() {
 		return path;

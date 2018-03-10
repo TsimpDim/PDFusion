@@ -1,8 +1,9 @@
+package control;
 import java.util.ArrayList;
 
 public class PdfWorkspace {
 
-	private static int totalFiles;
+	public static int totalFiles = 0;
 	private ArrayList<PdfFile> allFiles = new ArrayList<PdfFile>();
 	
 	/***
@@ -22,8 +23,19 @@ public class PdfWorkspace {
 	public boolean AddPdfToWorkspace(PdfFile p) {
 		if(allFiles.contains(p))
 			return false;
-		else
+		else {
 			allFiles.add(p);
 			return true;
+		}
+	}
+	
+	@Override
+	public String toString() {
+		String finalString = "----- WORKSPACE\n";
+		
+		for(PdfFile f : allFiles)
+			finalString += f.getPath() + ',' + String.valueOf(f.getFileId()) + '\n';
+		
+		return finalString;
 	}
 }
