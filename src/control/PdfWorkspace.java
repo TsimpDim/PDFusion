@@ -38,4 +38,8 @@ public class PdfWorkspace {
 		
 		return finalString;
 	}
+
+	public ArrayList<PdfFile> getAllFiles() {
+		return allFiles;
+	}
 }

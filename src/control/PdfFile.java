@@ -70,6 +70,19 @@ public class PdfFile extends File{
 	public void setFileId(int fileId) {
 		this.fileId = fileId;
 	}
+
+	public String getPagesString() {
+		String finalString = "";
+		
+		if(pages == null)
+			finalString =  "All";
+		else {
+			for(Integer pg : pages) 
+				finalString += String.valueOf(pg) + ',';
+		}
+		
+		return finalString;
+	}
 	
 	
 	

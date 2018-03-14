@@ -1,10 +1,19 @@
 package gui;
 
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.UIManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.DefaultTableModel;
 
 import control.PdfFile;
 import control.PdfWorkspace;
@@ -18,6 +27,12 @@ public class MainWindow extends JFrame{
 	JPanel sidePanel;
 	JButton openFilesButton;
 	JFileChooser fileChooser;
+	
+	JTable fileTable;
+	JScrollPane fileTablePane;
+	PdfFileTableModel tableModel;
+    String[] tableColumnNames = {"id","path","include","pages"};
+    
 	
 	public MainWindow(PdfWorkspace works) {
 		
@@ -43,9 +58,20 @@ public class MainWindow extends JFrame{
 		
 	    openFilesButton.addActionListener(buttonListener);
 	    
+	    // Table
+	    fileTable = new JTable();
+	    tableModel = new PdfFileTableModel(null);
+	    fileTable.setFillsViewportHeight(true);
+	    fileTable.setModel(tableModel);
+	    
+	    fileTablePane = new JScrollPane(fileTable);
+	    
 	    // Component setup
 	    sidePanel.add(openFilesButton);
-	    container.add(sidePanel);
+	    
+	    container.setLayout(new BorderLayout());
+	    container.add(sidePanel, BorderLayout.WEST);
+	    container.add(fileTablePane, BorderLayout.CENTER);
 	    
 		this.setContentPane(container);
 		
@@ -54,6 +80,7 @@ public class MainWindow extends JFrame{
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setSize(1000,500);
 	}
+	
 	
 	class ButtonListener implements ActionListener {
 		
@@ -71,6 +98,7 @@ public class MainWindow extends JFrame{
 					PdfFile newPDF = new PdfFile(curPath, true, fileIndex);
 					workspace.AddPdfToWorkspace(newPDF);
 					System.out.println(workspace.toString());
+					tableModel.updateData(workspace.getAllFiles());
 				}
 			
 			}
