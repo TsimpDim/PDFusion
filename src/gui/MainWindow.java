@@ -64,6 +64,10 @@ public class MainWindow extends JFrame{
 	    tableModel = new PdfFileTableModel(null);
 	    fileTable.setFillsViewportHeight(true);
 	    fileTable.setModel(tableModel);
+	    fileTable.getColumnModel().getColumn(0).setMaxWidth(20);
+	    fileTable.getColumnModel().getColumn(2).setMaxWidth(60);
+	    fileTable.getColumnModel().getColumn(3).setMaxWidth(60);
+
 	    
 	    fileTablePane = new JScrollPane(fileTable);
 	    
