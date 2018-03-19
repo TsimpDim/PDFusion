@@ -4,6 +4,9 @@ import java.util.ArrayList;
 
 public class PdfFile extends File{
 
+
+	private static final long serialVersionUID = -8832254767996433033L;
+	
 	private String path;
 	private ArrayList<Integer> pages = new ArrayList<Integer>();
 	private Boolean toMerge;

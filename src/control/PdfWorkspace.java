@@ -34,7 +34,7 @@ public class PdfWorkspace {
 		String finalString = "----- WORKSPACE\n";
 		
 		for(PdfFile f : allFiles)
-			finalString += f.getPath() + ',' + String.valueOf(f.getFileId()) + '\n';
+			finalString += f.getPath() + ',' + String.valueOf(f.getFileId()) + ',' + String.valueOf(f.getToMerge()) + '\n';
 		
 		return finalString;
 	}

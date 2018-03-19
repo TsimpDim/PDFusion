@@ -1,14 +1,19 @@
 package gui;
 
 import java.util.ArrayList;
-import java.util.Vector;
 
+import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableColumn;
 
 import control.PdfFile;
 
 public class PdfFileTableModel extends AbstractTableModel{
 
+
+	private static final long serialVersionUID = -236323778386855777L;
+	private static final int BOOLEAN_COLUMN = 3;
+	
 	private String[] columnNames = {"id", "path", "pages", "include"};
 	private ArrayList<PdfFile> files;
 	
@@ -55,12 +60,28 @@ public class PdfFileTableModel extends AbstractTableModel{
 	}
 	
 	@Override
-    public Class getColumnClass(int c) {
+    public Class<?> getColumnClass(int c) {
         return getValueAt(0, c).getClass();
     }
 	
+	@Override
+	public boolean isCellEditable(int row, int col) {
+		return col == BOOLEAN_COLUMN;
+	}
+	
+	@Override
+	public void setValueAt(Object value, int row, int col) {
+
+	    if (col == BOOLEAN_COLUMN) {
+            files.get(row).setToMerge((Boolean)value);
+            this.fireTableCellUpdated(row, col);
+	    }   
+	}
+
 	public void updateData(ArrayList<PdfFile> newFiles) {
 		this.files = newFiles;
+		this.fireTableDataChanged();
 	}
+	
 
 }

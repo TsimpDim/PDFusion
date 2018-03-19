@@ -3,7 +3,6 @@ package gui;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -13,12 +12,14 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.table.DefaultTableModel;
 
 import control.PdfFile;
 import control.PdfWorkspace;
 
 public class MainWindow extends JFrame{
+
+
+	private static final long serialVersionUID = -6007278116878081383L;
 
 	PdfWorkspace workspace = null;
 	
