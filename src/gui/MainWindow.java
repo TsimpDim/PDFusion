@@ -3,6 +3,7 @@ package gui;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -54,6 +55,7 @@ public class MainWindow extends JFrame{
 		openFilesButton = new JButton("Choose files");
 		
 		fileChooser = new JFileChooser();
+		fileChooser.setMultiSelectionEnabled(true);
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("PDF Documents", "pdf");
 		fileChooser.setFileFilter(filter);
 		
@@ -96,12 +98,15 @@ public class MainWindow extends JFrame{
 				
 				int returnVal = fileChooser.showOpenDialog(MainWindow.this);
 				if(returnVal == JFileChooser.APPROVE_OPTION) {
+					File[] new_files = fileChooser.getSelectedFiles();
 					
-					String curPath = fileChooser.getSelectedFile().getPath();
-					int fileIndex = PdfWorkspace.totalFiles++;
-					
-					PdfFile newPDF = new PdfFile(curPath, true, fileIndex);
-					workspace.AddPdfToWorkspace(newPDF);
+					for(File file : new_files) {
+						String curPath = file.getPath();
+						int fileIndex = PdfWorkspace.totalFiles++;
+						
+						PdfFile newPDF = new PdfFile(curPath, true, fileIndex);
+						workspace.AddPdfToWorkspace(newPDF);
+					}
 					System.out.println(workspace.toString());
 					tableModel.updateData(workspace.getAllFiles());
 				}
