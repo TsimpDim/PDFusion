@@ -13,7 +13,8 @@ public class PdfFileTableModel extends AbstractTableModel{
 
 	private static final long serialVersionUID = -236323778386855777L;
 	private static final int BOOLEAN_COLUMN = 3;
-	
+	private static final int PAGES_COLUMN = 2;
+
 	private String[] columnNames = {"id", "path", "pages", "include"};
 	private ArrayList<PdfFile> files;
 	
@@ -66,16 +67,19 @@ public class PdfFileTableModel extends AbstractTableModel{
 	
 	@Override
 	public boolean isCellEditable(int row, int col) {
-		return col == BOOLEAN_COLUMN;
+		return (col == BOOLEAN_COLUMN || col == PAGES_COLUMN);
 	}
 	
 	@Override
 	public void setValueAt(Object value, int row, int col) {
 
 	    if (col == BOOLEAN_COLUMN) {
-            files.get(row).setToMerge((Boolean)value);
+            files.get(row).setToMerge((Boolean) value);
             this.fireTableCellUpdated(row, col);
-	    }   
+	    }else if(col == PAGES_COLUMN) {
+	    	files.get(row).setPages((String) value);
+            this.fireTableCellUpdated(row, col);
+	    }
 	}
 
 	public void updateData(ArrayList<PdfFile> newFiles) {

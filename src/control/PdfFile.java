@@ -1,6 +1,7 @@
 package control;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 public class PdfFile extends File{
 
@@ -56,6 +57,27 @@ public class PdfFile extends File{
 
 	public void setPages(ArrayList<Integer> pages) {
 		this.pages = pages;
+	}
+	
+	public void setPages(String pages) {
+		ArrayList<Integer> new_pages = new ArrayList<>();
+		String[] splitStr = pages.split(Pattern.quote(","));
+		
+		for(String str : splitStr) {
+			if (str.contains("-")) {
+				// Get all values within given range
+				String[] splitRange = str.split(Pattern.quote("-"));
+
+				int start = Integer.valueOf(splitRange[0]);
+				int end = Integer.valueOf(splitRange[1]);
+				for(int i = start; i < end+1; i++) 
+					new_pages.add(i);
+				
+			}else 
+				new_pages.add(Integer.valueOf(str));
+		}
+			
+		this.pages = new_pages;
 	}
 
 	public Boolean getToMerge() {
