@@ -3,6 +3,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
+import javax.swing.JOptionPane;
+
 public class PdfFile extends File{
 
 
@@ -65,6 +67,7 @@ public class PdfFile extends File{
 		
 		for(String str : splitStr) {
 			if (str.contains("-")) {
+				
 				// Get all values within given range
 				String[] splitRange = str.split(Pattern.quote("-"));
 
@@ -73,8 +76,15 @@ public class PdfFile extends File{
 				for(int i = start; i < end+1; i++) 
 					new_pages.add(i);
 				
-			}else 
-				new_pages.add(Integer.valueOf(str));
+			}else {
+				try {
+					new_pages.add(Integer.valueOf(str));
+				}catch(NumberFormatException e) {
+					JOptionPane.showMessageDialog(null, "Wrong input given. Only numbers, commas and dashes are allowed", "Warning", JOptionPane.WARNING_MESSAGE);
+					this.pages = null;
+					return;
+				}
+			}
 		}
 			
 		this.pages = new_pages;
@@ -104,6 +114,8 @@ public class PdfFile extends File{
 		else {
 			for(Integer pg : pages) 
 				finalString += String.valueOf(pg) + ',';
+			
+			finalString = finalString.substring(0,finalString.length() - 1); // Delete final comma
 		}
 		
 		return finalString;

@@ -2,10 +2,7 @@ package gui;
 
 import java.util.ArrayList;
 
-import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableColumn;
-
 import control.PdfFile;
 
 public class PdfFileTableModel extends AbstractTableModel{
@@ -81,6 +78,7 @@ public class PdfFileTableModel extends AbstractTableModel{
             this.fireTableCellUpdated(row, col);
 	    }
 	}
+	
 
 	public void updateData(ArrayList<PdfFile> newFiles) {
 		this.files = newFiles;

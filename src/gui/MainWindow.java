@@ -66,11 +66,16 @@ public class MainWindow extends JFrame{
 	    tableModel = new PdfFileTableModel(null);
 	    fileTable.setFillsViewportHeight(true);
 	    fileTable.setModel(tableModel);
+	    
 	    fileTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 	    fileTable.getColumnModel().getColumn(0).setPreferredWidth(20);
 	    fileTable.getColumnModel().getColumn(1).setPreferredWidth(741);
 	    fileTable.getColumnModel().getColumn(2).setPreferredWidth(60);
 	    fileTable.getColumnModel().getColumn(3).setPreferredWidth(60);
+	    
+	    fileTable.getColumnModel().getColumn(2).setCellRenderer(new PageCellRenderer());
+
+	    
 
 	    
 	    fileTablePane = new JScrollPane(fileTable);
