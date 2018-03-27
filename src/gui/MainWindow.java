@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -28,6 +29,7 @@ public class MainWindow extends JFrame{
 	
 	JPanel sidePanel;
 	JButton openFilesButton;
+	JButton mergeFilesButton;
 	JFileChooser fileChooser;
 	
 	JTable fileTable;
@@ -53,13 +55,15 @@ public class MainWindow extends JFrame{
 		// Side panel
 		sidePanel = new JPanel();
 		openFilesButton = new JButton("Choose files");
-		
+		mergeFilesButton = new JButton("Merge files");
+	
 		fileChooser = new JFileChooser();
 		fileChooser.setMultiSelectionEnabled(true);
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("PDF Documents", "pdf");
 		fileChooser.setFileFilter(filter);
 		
 	    openFilesButton.addActionListener(buttonListener);
+	    mergeFilesButton.addActionListener(buttonListener);
 	    
 	    // Table
 	    fileTable = new JTable();
@@ -82,6 +86,7 @@ public class MainWindow extends JFrame{
 	    
 	    // Component setup
 	    sidePanel.add(openFilesButton);
+	    sidePanel.add(mergeFilesButton);
 	    
 	    container.setLayout(new BorderLayout());
 	    container.add(sidePanel, BorderLayout.WEST);
@@ -118,6 +123,14 @@ public class MainWindow extends JFrame{
 					tableModel.updateData(workspace.getAllFiles());
 				}
 			
+			}else if(arg0.getSource().equals(mergeFilesButton)) {
+				
+				try {
+					workspace.MergePDFs();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 	}

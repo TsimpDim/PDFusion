@@ -1,9 +1,13 @@
 package control;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 import javax.swing.JOptionPane;
+
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfReader;
 
 public class PdfFile extends File{
 
@@ -54,7 +58,29 @@ public class PdfFile extends File{
 	}
 
 	public ArrayList<Integer> getPages() {
-		return pages;
+		int num_pages = -1;
+		ArrayList<Integer> new_pages = new ArrayList<>();
+		
+		if(pages != null)
+			return pages;
+		else {
+			PdfDocument sourcePdf = null;
+			try {
+				sourcePdf = new PdfDocument(new PdfReader(this.path));
+			} catch (IOException e) {
+				e.printStackTrace();
+				return null;
+			}
+			
+			num_pages = sourcePdf.getNumberOfPages();
+			sourcePdf.close();
+			
+			for(int i = 1; i < num_pages + 1; i++)
+				new_pages.add(i);
+			
+			
+			return new_pages;
+		}
 	}
 
 	public void setPages(ArrayList<Integer> pages) {
@@ -64,6 +90,12 @@ public class PdfFile extends File{
 	public void setPages(String pages) {
 		ArrayList<Integer> new_pages = new ArrayList<>();
 		String[] splitStr = pages.split(Pattern.quote(","));
+		
+		if(pages.toLowerCase().equals("all")) {
+			this.pages = null;
+			return;
+		}
+		
 		
 		for(String str : splitStr) {
 			if (str.contains("-")) {

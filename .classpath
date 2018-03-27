@@ -6,5 +6,7 @@
 	<classpathentry kind="lib" path="C:/Users/Home/Desktop/Misc/Dim/eclipse/workspace/PDFusion/libs/kernel-7.1.1.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Home/Desktop/Misc/Dim/eclipse/workspace/PDFusion/libs/layout-7.1.1.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Home/Desktop/Misc/Dim/eclipse/workspace/PDFusion/libs/pdfa-7.1.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Home/Desktop/Misc/Dim/eclipse/workspace/PDFusion/libs/slf4j-api-2.0.99.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Home/Desktop/Misc/Dim/eclipse/workspace/PDFusion/libs/slf4j-simple-1.6.99.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

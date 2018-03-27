@@ -1,5 +1,19 @@
 package control;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
+
+import javax.lang.model.element.Element;
+import javax.swing.text.Document;
+
+import com.itextpdf.io.codec.Base64;
+import com.itextpdf.kernel.pdf.PdfArray;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfReader;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.kernel.utils.PdfMerger;
+import com.itextpdf.layout.font.FontInfo;
 
 public class PdfWorkspace {
 
@@ -9,10 +23,31 @@ public class PdfWorkspace {
 	/***
 	 * Merge all the files in the allFiles ArrayList
 	 * @return The amount of files merged
+	 * @throws IOException 
 	 */
-	public static int MergePDFs() {
+	public int MergePDFs() throws IOException {
 		
-		return 0;
+		PdfDocument pdf = new PdfDocument(new PdfWriter("MERGED_PDF.pdf"));
+		PdfMerger merger = new PdfMerger(pdf);
+		int files_merged = 0;
+		
+		
+		for(PdfFile file : allFiles) {
+			PdfDocument sourcePdf = new PdfDocument(new PdfReader(file.getPath()));
+			try {
+			merger.merge(sourcePdf, file.getPages());
+			}catch(NullPointerException e) {
+				sourcePdf.close();
+				break;
+			}
+			files_merged++;
+			sourcePdf.close();
+		}
+	
+
+
+		pdf.close();
+		return files_merged;
 	}
 	
 	/**
