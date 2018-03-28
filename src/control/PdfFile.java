@@ -48,6 +48,20 @@ public class PdfFile extends File{
 		this.fileId = fileId;
 	}
 	
+	/***
+	 * Initalize a new PdfFile with a string pages parameter
+	 * @param path The file path
+	 * @param pages A String containing the pages to include
+	 * @param toMerge
+	 * @param fileId
+	 */
+	public PdfFile(String path, String pages, Boolean toMerge, int fileId) {
+		super(path);
+		this.path = path;
+		this.setPages(pages);
+		this.toMerge = toMerge;
+		this.fileId = fileId;
+	}
 
 	public String getPath() {
 		return path;
@@ -58,31 +72,33 @@ public class PdfFile extends File{
 	}
 
 	public ArrayList<Integer> getPages() {
-		int num_pages = -1;
-		ArrayList<Integer> new_pages = new ArrayList<>();
 		
 		if(pages != null)
 			return pages;
-		else {
-			PdfDocument sourcePdf = null;
-			try {
-				sourcePdf = new PdfDocument(new PdfReader(this.path));
-			} catch (IOException e) {
-				e.printStackTrace();
-				return null;
-			}
-			
-			num_pages = sourcePdf.getNumberOfPages();
-			sourcePdf.close();
-			
-			for(int i = 1; i < num_pages + 1; i++)
-				new_pages.add(i);
-			
-			
-			return new_pages;
-		}
+		else 
+			return getAvailablePages();
 	}
 
+	public ArrayList<Integer> getAvailablePages(){
+		PdfDocument sourcePdf = null;
+		int numPages = -1;
+		ArrayList<Integer> pages = new ArrayList<>();
+		
+		try {
+			sourcePdf = new PdfDocument(new PdfReader(this.path));
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+		
+		numPages = sourcePdf.getNumberOfPages();
+		sourcePdf.close();
+		
+		for(int i = 1; i < numPages + 1; i++)
+			pages.add(i);
+		
+		return pages;
+	}
 	public void setPages(ArrayList<Integer> pages) {
 		this.pages = pages;
 	}
@@ -103,8 +119,24 @@ public class PdfFile extends File{
 				// Get all values within given range
 				String[] splitRange = str.split(Pattern.quote("-"));
 
-				int start = Integer.valueOf(splitRange[0]);
-				int end = Integer.valueOf(splitRange[1]);
+				int end = 1;
+				int start = 1;
+				
+				try {
+					start = Integer.valueOf(splitRange[0]);
+				}catch(NumberFormatException e) {
+					JOptionPane.showMessageDialog(null, "Wrong input given. Only numbers, commas and dashes are allowed", "Warning", JOptionPane.WARNING_MESSAGE);
+					this.pages = null;
+					return;
+				}
+				
+				try {
+					end = Integer.valueOf(splitRange[1]);
+				}catch(NumberFormatException | ArrayIndexOutOfBoundsException e) {
+					end = getAvailablePages().size();
+				}
+				
+				
 				for(int i = start; i < end+1; i++) 
 					new_pages.add(i);
 				

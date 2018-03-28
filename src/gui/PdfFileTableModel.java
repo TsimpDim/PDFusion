@@ -2,8 +2,10 @@ package gui;
 
 import java.util.ArrayList;
 
+import javax.swing.JOptionPane;
 import javax.swing.table.AbstractTableModel;
 import control.PdfFile;
+import control.PdfWorkspace;
 
 public class PdfFileTableModel extends AbstractTableModel{
 
@@ -73,8 +75,23 @@ public class PdfFileTableModel extends AbstractTableModel{
 	    if (col == BOOLEAN_COLUMN) {
             files.get(row).setToMerge((Boolean) value);
             this.fireTableCellUpdated(row, col);
+            
+            if((Boolean) value == false)
+            	PdfWorkspace.totalFilesToMerge--;
+            else
+            	PdfWorkspace.totalFilesToMerge++;
+            
 	    }else if(col == PAGES_COLUMN) {
+	    	
+	    	// Check if pages entered exist in the file
+	    	ArrayList<Integer> availableFilePages = new ArrayList<>(files.get(row).getPages());
 	    	files.get(row).setPages((String) value);
+	    	
+	    	if(!availableFilePages.containsAll(files.get(row).getPages())) {
+	    		files.get(row).setPages("all");
+				JOptionPane.showMessageDialog(null, "Selected page range is not available.", "Warning", JOptionPane.WARNING_MESSAGE);
+	    	}
+	    		
             this.fireTableCellUpdated(row, col);
 	    }
 	}

@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -77,10 +76,7 @@ public class MainWindow extends JFrame{
 	    fileTable.getColumnModel().getColumn(2).setPreferredWidth(60);
 	    fileTable.getColumnModel().getColumn(3).setPreferredWidth(60);
 	    
-	    fileTable.getColumnModel().getColumn(2).setCellRenderer(new PageCellRenderer());
-
-	    
-
+	    fileTable.getColumnModel().getColumn(2).setCellRenderer(new PageCellRenderer(works));
 	    
 	    fileTablePane = new JScrollPane(fileTable);
 	    
@@ -114,7 +110,7 @@ public class MainWindow extends JFrame{
 					
 					for(File file : new_files) {
 						String curPath = file.getPath();
-						int fileIndex = PdfWorkspace.totalFiles++;
+						int fileIndex = PdfWorkspace.totalFiles;
 						
 						PdfFile newPDF = new PdfFile(curPath, true, fileIndex);
 						workspace.AddPdfToWorkspace(newPDF);
@@ -124,13 +120,8 @@ public class MainWindow extends JFrame{
 				}
 			
 			}else if(arg0.getSource().equals(mergeFilesButton)) {
-				
-				try {
-					workspace.MergePDFs();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				// TODO: Add selection of destination via FileChooser
+				workspace.MergePDFs("MERGED_FILE.pdf");
 			}
 		}
 	}
