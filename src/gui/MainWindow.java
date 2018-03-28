@@ -8,6 +8,7 @@ import java.io.File;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -120,8 +121,23 @@ public class MainWindow extends JFrame{
 				}
 			
 			}else if(arg0.getSource().equals(mergeFilesButton)) {
-				// TODO: Add selection of destination via FileChooser
-				workspace.MergePDFs("MERGED_FILE.pdf");
+
+				fileChooser.setSelectedFile(new File("export.pdf")); // Sets default filename
+				
+				int returnVal = fileChooser.showSaveDialog(MainWindow.this);
+				if(returnVal == JFileChooser.APPROVE_OPTION) {
+				    
+				    String filename = fileChooser.getSelectedFile().getName().toLowerCase();
+				    String destination = fileChooser.getSelectedFile().getPath();
+				    
+				    if (!filename.endsWith(".pdf")) {
+				      filename += ".pdf";
+				    }
+				      
+					workspace.MergePDFs(filename, destination);
+				}
+				
+				
 			}
 		}
 	}

@@ -20,7 +20,7 @@ public class PdfWorkspace {
 	 * Merge all the files in the allFiles ArrayList
 	 * @return The amount of files merged
 	 */
-	public int MergePDFs(String destination){
+	public int MergePDFs(String filename, String destination){
 		
 		PdfDocument pdf = null;
 		int filesMerged = 0;
