@@ -133,7 +133,7 @@ public class MainWindow extends JFrame{
 						int fileIndex = PdfWorkspace.totalFiles;
 						
 						PdfFile newPDF = new PdfFile(curPath, true, fileIndex);
-						workspace.AddPdfToWorkspace(newPDF);
+						workspace.addFileToWorkspace(newPDF);
 					}
 					tableModel.updateData(workspace.getAllFiles());
 				}
@@ -152,7 +152,7 @@ public class MainWindow extends JFrame{
 				      filename += ".pdf";
 				    }
 				      
-					workspace.MergePDFs(filename, destination);
+					workspace.mergeFiles(filename, destination);
 				}
 				
 				
@@ -160,18 +160,18 @@ public class MainWindow extends JFrame{
 				int selectedRow = fileTable.getSelectedRow();
 				if(selectedRow > -1) {
 					int[] selectedRows = fileTable.getSelectedRows();
-					if(workspace.RemoveFilesFromWorkspace(selectedRows))
+					if(workspace.removeFilesFromWorkspace(selectedRows))
 						tableModel.fireTableRowsDeleted(selectedRows[0], selectedRows[selectedRows.length - 1]);
 				}
 			}else if(arg0.getSource().equals(moveSelectionUp)) {
 				int[] selectedRows = fileTable.getSelectedRows();
-				if(workspace.MoveFilesUp(selectedRows)) {
+				if(workspace.moveFilesUp(selectedRows)) {
 					tableModel.fireTableDataChanged();
 					fileTable.setRowSelectionInterval(selectedRows[0] - 1, selectedRows[selectedRows.length - 1] - 1); // Move selection upwards
 				}
 			}else if(arg0.getSource().equals(moveSelectionDown)) {
 				int[] selectedRows = fileTable.getSelectedRows();
-				if(workspace.MoveFilesDown(selectedRows)) {
+				if(workspace.moveFilesDown(selectedRows)) {
 					tableModel.fireTableDataChanged();
 					fileTable.setRowSelectionInterval(selectedRows[0] + 1, selectedRows[selectedRows.length - 1] + 1); // Move selection downwards
 				}

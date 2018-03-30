@@ -22,7 +22,7 @@ public class PdfWorkspace {
 	 * Merge all the files in the allFiles ArrayList
 	 * @return The amount of files merged
 	 */
-	public int MergePDFs(String filename, String destination){
+	public int mergeFiles(String filename, String destination){
 		
 		PdfDocument pdf = null;
 		int filesMerged = 0;
@@ -72,7 +72,7 @@ public class PdfWorkspace {
 	 * @param p The PdfFile to add
 	 * @return True if the file was added successfully, False if the file is already in the PdfWorkspace
 	 */
-	public boolean AddPdfToWorkspace(PdfFile p) {
+	public boolean addFileToWorkspace(PdfFile p) {
 		if(allFiles.contains(p))
 			return false;
 		else {
@@ -89,7 +89,7 @@ public class PdfWorkspace {
 	 * @param p The PdfFile to add
 	 * @return True if the file was removed successfully, False if the file was not in the PdfWorkspace
 	 */
-	public boolean RemoveFilesFromWorkspace(int[] rows) {
+	public boolean removeFilesFromWorkspace(int[] rows) {
 		Integer[] newRows = Arrays.stream(rows).boxed().toArray( Integer[]::new );
 		Arrays.sort(newRows, Collections.reverseOrder());
 		for(Integer row : newRows) {
@@ -106,7 +106,7 @@ public class PdfWorkspace {
 	}
 	
 	
-	public boolean MoveFilesUp(int[] indices) {
+	public boolean moveFilesUp(int[] indices) {
 		for(Integer index : indices) {
 			if(index > -1)
 				Collections.swap(allFiles, index, index - 1);
@@ -116,7 +116,7 @@ public class PdfWorkspace {
 		return true;
 	}
 	
-	public boolean MoveFilesDown(int[] indices) {
+	public boolean moveFilesDown(int[] indices) {
 		for(int i = indices.length - 1; i >= 0; i--) {
 			int el = indices[i];
 			if(indices.length + indices[0] < allFiles.size())
