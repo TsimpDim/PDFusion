@@ -19,8 +19,8 @@ public class PdfFile extends File{
 	private Boolean toMerge;
 	private int fileId;
 	
-	/***
-	 * Initalize a new PdfFile with page restrictions
+	/**
+	 * Initialize a new PdfFile with page restrictions
 	 * @param path The file path
 	 * @param pages An ArrayList with all the pages to use. Set null for full pages.
 	 * @param toMerge 
@@ -34,8 +34,8 @@ public class PdfFile extends File{
 		this.fileId = fileId;
 	}
 	
-	/***
-	 * Initalize a new PdfFile without page restrictions
+	/**
+	 * Initialize a new PdfFile without page restrictions
 	 * @param path The file path
 	 * @param toMerge 
 	 * @param fileId
@@ -48,8 +48,8 @@ public class PdfFile extends File{
 		this.fileId = fileId;
 	}
 	
-	/***
-	 * Initalize a new PdfFile with a string pages parameter
+	/**
+	 * Initialize a new PdfFile with a string pages parameter
 	 * @param path The file path
 	 * @param pages A String containing the pages to include
 	 * @param toMerge
@@ -79,6 +79,10 @@ public class PdfFile extends File{
 			return getAvailablePages();
 	}
 
+	/**
+	 * 
+	 * @return All available pages of current file in an ArrayList
+	 */
 	public ArrayList<Integer> getAvailablePages(){
 		PdfDocument sourcePdf = null;
 		int numPages = -1;
@@ -103,6 +107,10 @@ public class PdfFile extends File{
 		this.pages = pages;
 	}
 	
+	/**
+	 * Transforms a range String into an ArrayList
+	 * @param pages A String representation of the selection range
+	 */
 	public void setPages(String pages) {
 		ArrayList<Integer> new_pages = new ArrayList<>();
 		String[] splitStr = pages.split(Pattern.quote(","));
@@ -122,6 +130,7 @@ public class PdfFile extends File{
 				int end = 1;
 				int start = 1;
 				
+				// No start given
 				try {
 					start = Integer.valueOf(splitRange[0]);
 				}catch(NumberFormatException e) {
@@ -130,13 +139,14 @@ public class PdfFile extends File{
 					return;
 				}
 				
+				// No end given
 				try {
 					end = Integer.valueOf(splitRange[1]);
 				}catch(NumberFormatException | ArrayIndexOutOfBoundsException e) {
-					end = getAvailablePages().size();
+					end = getAvailablePages().size(); // If no end is given, assume range till end of file
 				}
 				
-				
+				// Add all pages within range
 				for(int i = start; i < end+1; i++) 
 					new_pages.add(i);
 				

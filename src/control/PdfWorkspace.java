@@ -2,6 +2,8 @@ package control;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 
 import javax.swing.JOptionPane;
 
@@ -82,6 +84,50 @@ public class PdfWorkspace {
 		}
 	}
 	
+	/**
+	 * Remove files from the PdfWorkspace
+	 * @param p The PdfFile to add
+	 * @return True if the file was removed successfully, False if the file was not in the PdfWorkspace
+	 */
+	public boolean RemoveFilesFromWorkspace(int[] rows) {
+		Integer[] newRows = Arrays.stream(rows).boxed().toArray( Integer[]::new );
+		Arrays.sort(newRows, Collections.reverseOrder());
+		for(Integer row : newRows) {
+			if(row > allFiles.size())
+				return false;
+			
+			allFiles.remove(allFiles.get(row));
+			
+			totalFiles--;
+			totalFilesToMerge--;
+		}
+		
+		return true;
+	}
+	
+	
+	public boolean MoveFilesUp(int[] indices) {
+		for(Integer index : indices) {
+			if(index > -1)
+				Collections.swap(allFiles, index, index - 1);
+			else
+				return false;
+		}
+		return true;
+	}
+	
+	public boolean MoveFilesDown(int[] indices) {
+		for(int i = indices.length - 1; i >= 0; i--) {
+			int el = indices[i];
+			if(indices.length + indices[0] < allFiles.size())
+				Collections.swap(allFiles, el, el + 1);
+			else
+				return false;
+		}
+		return true;
+		
+	}
+	
 	@Override
 	public String toString() {
 		String finalString = "----- WORKSPACE\n";
@@ -94,5 +140,9 @@ public class PdfWorkspace {
 
 	public ArrayList<PdfFile> getAllFiles() {
 		return allFiles;
+	}
+	
+	public PdfFile getFile(int index) {
+		return allFiles.get(index);
 	}
 }

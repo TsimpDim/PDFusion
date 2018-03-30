@@ -8,8 +8,9 @@ import java.io.File;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.UIManager;
@@ -36,7 +37,10 @@ public class MainWindow extends JFrame{
 	JScrollPane fileTablePane;
 	PdfFileTableModel tableModel;
     String[] tableColumnNames = {"id","path","include","pages"};
-    
+    JPopupMenu tableMenu;
+    JMenuItem deleteSelection;
+    JMenuItem moveSelectionUp;
+    JMenuItem moveSelectionDown;
 	
 	public MainWindow(PdfWorkspace works) {
 		
@@ -81,6 +85,21 @@ public class MainWindow extends JFrame{
 	    
 	    fileTablePane = new JScrollPane(fileTable);
 	    
+	    tableMenu = new JPopupMenu();
+	    deleteSelection = new JMenuItem("Delete file(s)");
+	    moveSelectionUp = new JMenuItem("Move up");
+	    moveSelectionDown = new JMenuItem("Move down");
+	    
+	    deleteSelection.addActionListener(buttonListener);
+	    moveSelectionUp.addActionListener(buttonListener);
+	    moveSelectionDown.addActionListener(buttonListener);
+	    
+	    tableMenu.add(deleteSelection);
+	    tableMenu.add(moveSelectionUp);
+	    tableMenu.add(moveSelectionDown);
+	    
+	    fileTable.setComponentPopupMenu(tableMenu);
+	    
 	    // Component setup
 	    sidePanel.add(openFilesButton);
 	    sidePanel.add(mergeFilesButton);
@@ -116,7 +135,6 @@ public class MainWindow extends JFrame{
 						PdfFile newPDF = new PdfFile(curPath, true, fileIndex);
 						workspace.AddPdfToWorkspace(newPDF);
 					}
-					System.out.println(workspace.toString());
 					tableModel.updateData(workspace.getAllFiles());
 				}
 			
@@ -138,8 +156,26 @@ public class MainWindow extends JFrame{
 				}
 				
 				
+			}else if(arg0.getSource().equals(deleteSelection)) {
+				int selectedRow = fileTable.getSelectedRow();
+				if(selectedRow > -1) {
+					int[] selectedRows = fileTable.getSelectedRows();
+					if(workspace.RemoveFilesFromWorkspace(selectedRows))
+						tableModel.fireTableRowsDeleted(selectedRows[0], selectedRows[selectedRows.length - 1]);
+				}
+			}else if(arg0.getSource().equals(moveSelectionUp)) {
+				int[] selectedRows = fileTable.getSelectedRows();
+				if(workspace.MoveFilesUp(selectedRows)) {
+					tableModel.fireTableDataChanged();
+					fileTable.setRowSelectionInterval(selectedRows[0] - 1, selectedRows[selectedRows.length - 1] - 1); // Move selection upwards
+				}
+			}else if(arg0.getSource().equals(moveSelectionDown)) {
+				int[] selectedRows = fileTable.getSelectedRows();
+				if(workspace.MoveFilesDown(selectedRows)) {
+					tableModel.fireTableDataChanged();
+					fileTable.setRowSelectionInterval(selectedRows[0] + 1, selectedRows[selectedRows.length - 1] + 1); // Move selection downwards
+				}
 			}
 		}
 	}
 }
-
