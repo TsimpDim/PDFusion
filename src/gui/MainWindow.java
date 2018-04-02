@@ -3,7 +3,11 @@ package gui;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -13,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -55,6 +60,7 @@ public class MainWindow extends JFrame{
 		
 		container = new JPanel();
 		ButtonListener buttonListener = new ButtonListener();
+		KeyListener keyPressListener = new KeyPressListener();
 		
 		// Side panel
 		sidePanel = new JPanel();
@@ -100,6 +106,8 @@ public class MainWindow extends JFrame{
 	    
 	    fileTable.setComponentPopupMenu(tableMenu);
 	    
+	    fileTable.addKeyListener(keyPressListener);
+	    	    
 	    // Component setup
 	    sidePanel.add(openFilesButton);
 	    sidePanel.add(mergeFilesButton);
@@ -116,13 +124,44 @@ public class MainWindow extends JFrame{
 		this.setSize(1000,500);
 	}
 	
+	private void deleteSelectedRows() {
+		int selectedRow = fileTable.getSelectedRow();
+		if(selectedRow > -1) {
+			int[] selectedRows = fileTable.getSelectedRows();
+			if(workspace.removeFilesFromWorkspace(selectedRows))
+				tableModel.fireTableRowsDeleted(selectedRows[0], selectedRows[selectedRows.length - 1]);
+		}
+	}
+	
+	private void moveSelectedRowsUp() {
+		int selectedRow = fileTable.getSelectedRow();
+		if(selectedRow > 0) {
+			int[] selectedRows = fileTable.getSelectedRows();
+			if(workspace.moveFilesUp(selectedRows)) {
+				tableModel.fireTableDataChanged();
+				fileTable.setRowSelectionInterval(selectedRows[0] - 1, selectedRows[selectedRows.length - 1] - 1); // Move selection upwards
+			}
+		}
+	}
+
+	private void moveSelectedRowsDown() {
+		int selectedRow = fileTable.getSelectedRow();
+		if(selectedRow > -1) {
+			int[] selectedRows = fileTable.getSelectedRows();
+			if(workspace.moveFilesDown(selectedRows)) {
+				tableModel.fireTableDataChanged();
+				fileTable.setRowSelectionInterval(selectedRows[0] + 1, selectedRows[selectedRows.length - 1] + 1); // Move selection downwards
+			}
+		}
+	}
+	
 	
 	class ButtonListener implements ActionListener {
 		
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			
-			if(arg0.getSource().equals(openFilesButton)) {
+			if(arg0.getSource().equals(openFilesButton)) { // Open files and add them into the workspace
 				
 				int returnVal = fileChooser.showOpenDialog(MainWindow.this);
 				if(returnVal == JFileChooser.APPROVE_OPTION) {
@@ -138,7 +177,7 @@ public class MainWindow extends JFrame{
 					tableModel.updateData(workspace.getAllFiles());
 				}
 			
-			}else if(arg0.getSource().equals(mergeFilesButton)) {
+			}else if(arg0.getSource().equals(mergeFilesButton)) { // Merge files
 
 				fileChooser.setSelectedFile(new File("export.pdf")); // Sets default filename
 				
@@ -157,25 +196,49 @@ public class MainWindow extends JFrame{
 				
 				
 			}else if(arg0.getSource().equals(deleteSelection)) {
-				int selectedRow = fileTable.getSelectedRow();
-				if(selectedRow > -1) {
-					int[] selectedRows = fileTable.getSelectedRows();
-					if(workspace.removeFilesFromWorkspace(selectedRows))
-						tableModel.fireTableRowsDeleted(selectedRows[0], selectedRows[selectedRows.length - 1]);
-				}
+				deleteSelectedRows();
 			}else if(arg0.getSource().equals(moveSelectionUp)) {
-				int[] selectedRows = fileTable.getSelectedRows();
-				if(workspace.moveFilesUp(selectedRows)) {
-					tableModel.fireTableDataChanged();
-					fileTable.setRowSelectionInterval(selectedRows[0] - 1, selectedRows[selectedRows.length - 1] - 1); // Move selection upwards
-				}
+				moveSelectedRowsUp();
 			}else if(arg0.getSource().equals(moveSelectionDown)) {
-				int[] selectedRows = fileTable.getSelectedRows();
-				if(workspace.moveFilesDown(selectedRows)) {
-					tableModel.fireTableDataChanged();
-					fileTable.setRowSelectionInterval(selectedRows[0] + 1, selectedRows[selectedRows.length - 1] + 1); // Move selection downwards
-				}
+				moveSelectedRowsDown();
 			}
 		}
+	}
+	
+	class KeyPressListener implements KeyListener {
+
+		// Currently pressed keys
+	    private final Set<Integer> pressed = new HashSet<Integer>(); // We use a Set to guarantee key uniqueness
+
+		@Override
+		public void keyPressed(KeyEvent e) {
+			pressed.add(e.getKeyCode()); // On press add to set
+			
+			if(pressed.size() > 1) { // Multi key events
+				
+				// "Move" events
+				if(pressed.contains(KeyEvent.VK_ALT) && pressed.contains(KeyEvent.VK_UP))
+					moveSelectedRowsUp();
+				else if(pressed.contains(KeyEvent.VK_ALT) && pressed.contains(KeyEvent.VK_DOWN))
+					moveSelectedRowsDown();
+				
+			}else { // Single key events			
+				// "Delete" event
+				if(e.getKeyCode() == KeyEvent.VK_DELETE) {
+					deleteSelectedRows();
+				}
+			}
+			
+			
+		}
+
+		@Override
+		public void keyReleased(KeyEvent e) {
+			pressed.remove(e.getKeyCode());
+		}
+
+		@Override
+		public void keyTyped(KeyEvent e) {}
+		
 	}
 }
