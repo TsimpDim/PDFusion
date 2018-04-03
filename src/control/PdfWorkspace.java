@@ -70,18 +70,11 @@ public class PdfWorkspace {
 	/**
 	 * Add a new PdfFile into the PdfWorkspace
 	 * @param p The PdfFile to add
-	 * @return True if the file was added successfully, False if the file is already in the PdfWorkspace
 	 */
-	public boolean addFileToWorkspace(PdfFile p) {
-		if(allFiles.contains(p))
-			return false;
-		else {
-			allFiles.add(p);
-			totalFiles++;
-			totalFilesToMerge++;
-			
-			return true;
-		}
+	public void addFileToWorkspace(PdfFile p) {
+		allFiles.add(p);
+		totalFiles++;
+		totalFilesToMerge++;
 	}
 	
 	/**
@@ -105,7 +98,7 @@ public class PdfWorkspace {
 		return true;
 	}
 	
-	
+
 	public boolean moveFilesUp(int[] indices) {
 		for(Integer index : indices) {
 			if(index > -1)

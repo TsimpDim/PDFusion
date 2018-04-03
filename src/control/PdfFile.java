@@ -63,6 +63,18 @@ public class PdfFile extends File{
 		this.fileId = fileId;
 	}
 
+	/**
+	 * Create a new PdfFile from an existing one
+	 * @param master The prototype for the new object
+	 */
+	public PdfFile(PdfFile master) {
+		super(master.path);
+		this.path = master.path;
+		this.pages = master.pages;
+		this.toMerge = master.toMerge;
+		this.fileId = master.fileId;
+	}
+
 	public String getPath() {
 		return path;
 	}

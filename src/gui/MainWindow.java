@@ -17,7 +17,6 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -46,6 +45,7 @@ public class MainWindow extends JFrame{
     JMenuItem deleteSelection;
     JMenuItem moveSelectionUp;
     JMenuItem moveSelectionDown;
+    JMenuItem duplicateSelection;
 	
 	public MainWindow(PdfWorkspace works) {
 		
@@ -95,14 +95,17 @@ public class MainWindow extends JFrame{
 	    deleteSelection = new JMenuItem("Delete file(s)");
 	    moveSelectionUp = new JMenuItem("Move up");
 	    moveSelectionDown = new JMenuItem("Move down");
+	    duplicateSelection = new JMenuItem("Duplicate selection");
 	    
 	    deleteSelection.addActionListener(buttonListener);
 	    moveSelectionUp.addActionListener(buttonListener);
 	    moveSelectionDown.addActionListener(buttonListener);
+	    duplicateSelection.addActionListener(buttonListener);
 	    
 	    tableMenu.add(deleteSelection);
 	    tableMenu.add(moveSelectionUp);
 	    tableMenu.add(moveSelectionDown);
+	    tableMenu.add(duplicateSelection);
 	    
 	    fileTable.setComponentPopupMenu(tableMenu);
 	    
@@ -155,6 +158,22 @@ public class MainWindow extends JFrame{
 		}
 	}
 	
+	private void duplicateSelectedRows() {
+		int [] selectedRows = fileTable.getSelectedRows();
+		int rows = PdfWorkspace.totalFiles;
+		
+		if(selectedRows.length > 0) {
+			for(int row : selectedRows) {
+				PdfFile master = workspace.getFile(row);
+				PdfFile copy = new PdfFile(master);
+				copy.setFileId(PdfWorkspace.totalFiles);
+				workspace.addFileToWorkspace(copy);
+			}
+			tableModel.fireTableDataChanged();
+			fileTable.setRowSelectionInterval(rows, rows + selectedRows.length - 1);
+		}
+	}
+		
 	
 	class ButtonListener implements ActionListener {
 		
@@ -195,14 +214,15 @@ public class MainWindow extends JFrame{
 				}
 				
 				
-			}else if(arg0.getSource().equals(deleteSelection)) {
+			}else if(arg0.getSource().equals(deleteSelection)) 
 				deleteSelectedRows();
-			}else if(arg0.getSource().equals(moveSelectionUp)) {
+			else if(arg0.getSource().equals(moveSelectionUp)) 
 				moveSelectedRowsUp();
-			}else if(arg0.getSource().equals(moveSelectionDown)) {
+			else if(arg0.getSource().equals(moveSelectionDown)) 
 				moveSelectedRowsDown();
-			}
-		}
+			else if(arg0.getSource().equals(duplicateSelection))
+				duplicateSelectedRows();
+		}	
 	}
 	
 	class KeyPressListener implements KeyListener {
@@ -212,7 +232,7 @@ public class MainWindow extends JFrame{
 
 		@Override
 		public void keyPressed(KeyEvent e) {
-			pressed.add(e.getKeyCode()); // On press add to set
+			pressed.add(e.getKeyCode()); // On press add pressed key to set
 			
 			if(pressed.size() > 1) { // Multi key events
 				
@@ -222,11 +242,19 @@ public class MainWindow extends JFrame{
 				else if(pressed.contains(KeyEvent.VK_ALT) && pressed.contains(KeyEvent.VK_DOWN))
 					moveSelectedRowsDown();
 				
-			}else { // Single key events			
+				// "Duplicate selection" event
+				if(pressed.contains(KeyEvent.VK_CONTROL) && pressed.contains(KeyEvent.VK_D))
+					duplicateSelectedRows();
+				
+			}else { // Single key events
+				
 				// "Delete" event
-				if(e.getKeyCode() == KeyEvent.VK_DELETE) {
+				if(e.getKeyCode() == KeyEvent.VK_DELETE) 
 					deleteSelectedRows();
-				}
+				
+				// "Clear selection" event
+				if(e.getKeyCode() == KeyEvent.VK_ESCAPE)
+					fileTable.clearSelection();
 			}
 			
 			
