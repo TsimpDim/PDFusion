@@ -98,6 +98,16 @@ public class PdfWorkspace {
 		return true;
 	}
 	
+	public void duplicateFiles(int[] indices) {
+		if(indices.length > 0) {
+			for(int row : indices) {
+				PdfFile master = getFile(row);
+				PdfFile copy = new PdfFile(master);
+				copy.setFileId(totalFiles);
+				addFileToWorkspace(copy);
+			}
+		}
+	}
 
 	public boolean moveFilesUp(int[] indices) {
 		for(Integer index : indices) {

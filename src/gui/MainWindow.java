@@ -162,16 +162,11 @@ public class MainWindow extends JFrame{
 		int [] selectedRows = fileTable.getSelectedRows();
 		int rows = PdfWorkspace.totalFiles;
 		
-		if(selectedRows.length > 0) {
-			for(int row : selectedRows) {
-				PdfFile master = workspace.getFile(row);
-				PdfFile copy = new PdfFile(master);
-				copy.setFileId(PdfWorkspace.totalFiles);
-				workspace.addFileToWorkspace(copy);
-			}
-			tableModel.fireTableDataChanged();
-			fileTable.setRowSelectionInterval(rows, rows + selectedRows.length - 1);
-		}
+		workspace.duplicateFiles(selectedRows);
+		
+		tableModel.fireTableDataChanged();
+		fileTable.setRowSelectionInterval(rows, rows + selectedRows.length - 1);
+		
 	}
 		
 	
