@@ -92,7 +92,6 @@ public class PdfFile extends File{
 	}
 
 	/**
-	 * 
 	 * @return All available pages of current file in an ArrayList
 	 */
 	public ArrayList<Integer> getAvailablePages(){
@@ -146,8 +145,7 @@ public class PdfFile extends File{
 				try {
 					start = Integer.valueOf(splitRange[0]);
 				}catch(NumberFormatException e) {
-					JOptionPane.showMessageDialog(null, "Wrong input given. Only numbers, commas and dashes are allowed", "Warning", JOptionPane.WARNING_MESSAGE);
-					this.pages = null;
+					wrongInputError();
 					return;
 				}
 				
@@ -158,6 +156,13 @@ public class PdfFile extends File{
 					end = getAvailablePages().size(); // If no end is given, assume range till end of file
 				}
 				
+				// Start out of range
+				if(start > getAvailablePages().size()) {
+					wrongInputError();
+					return;
+				}
+					
+				
 				// Add all pages within range
 				for(int i = start; i < end+1; i++) 
 					new_pages.add(i);
@@ -166,8 +171,7 @@ public class PdfFile extends File{
 				try {
 					new_pages.add(Integer.valueOf(str));
 				}catch(NumberFormatException e) {
-					JOptionPane.showMessageDialog(null, "Wrong input given. Only numbers, commas and dashes are allowed", "Warning", JOptionPane.WARNING_MESSAGE);
-					this.pages = null;
+					wrongInputError();
 					return;
 				}
 			}
@@ -176,6 +180,11 @@ public class PdfFile extends File{
 		this.pages = new_pages;
 	}
 
+	public void wrongInputError() {
+		JOptionPane.showMessageDialog(null, "Wrong input given. Only numbers, commas and dashes are allowed.\n"
+				+ "Make sure input is within available pages.", "Warning", JOptionPane.WARNING_MESSAGE);
+		this.pages = null;
+	}
 	public Boolean getToMerge() {
 		return toMerge;
 	}
