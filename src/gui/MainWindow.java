@@ -89,6 +89,8 @@ public class MainWindow extends JFrame{
 	    
 	    fileTable.getColumnModel().getColumn(2).setCellRenderer(new PageCellRenderer(works));
 	    
+	    fileTable.setAutoCreateRowSorter(true);
+	    
 	    fileTablePane = new JScrollPane(fileTable);
 	    
 	    tableMenu = new JPopupMenu();
