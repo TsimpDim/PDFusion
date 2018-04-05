@@ -1,14 +1,18 @@
 package gui;
 
 import java.awt.BorderLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -123,7 +127,17 @@ public class MainWindow extends JFrame{
 	    
 		this.setContentPane(container);
 		
-		this.setTitle("Fusion Workspace");
+		this.setTitle("PDFusion Workspace");
+		ArrayList<Image> icons = new ArrayList<Image>();
+		icons.add(new ImageIcon("./res/PDFusion_logo_16.png").getImage());
+		icons.add(new ImageIcon("./res/PDFusion_logo_20.png").getImage());
+		icons.add(new ImageIcon("./res/PDFusion_logo_32.png").getImage());
+		icons.add(new ImageIcon("./res/PDFusion_logo_40.png").getImage());
+		icons.add(new ImageIcon("./res/PDFusion_logo_64.png").getImage());
+		icons.add(new ImageIcon("./res/PDFusion_logo_128.png").getImage());
+
+		this.setIconImages(icons);
+		
 		this.setVisible(true);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setSize(1000,500);
