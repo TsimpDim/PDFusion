@@ -1,4 +1,5 @@
 package control;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ public class PdfWorkspace {
 	public int mergeFiles(String filename, String destination){
 		
 		PdfDocument pdf = null;
+		boolean targetFileExists = false;
 		int filesMerged = 0;
 		
 		// Check if the conditions of the Workspace allow for files to be merged
@@ -33,9 +35,32 @@ public class PdfWorkspace {
 			return -1;
 		}
 		
-		// Open the new file
+		// Check if target file already exists
+		File testFile = new File(destination);
+		if(testFile.exists()) {
+			targetFileExists = true;
+			
+			int returnVal = JOptionPane.showOptionDialog(null, // Component
+					"Target file already exists. Do you want to overwrite it?", // Message
+					"File Warning", // Title
+					JOptionPane.YES_NO_OPTION, 
+					JOptionPane.WARNING_MESSAGE,
+					null, // Icon
+					new Object[] {"Yes" , "No"}, // Options
+					"Yes" // Default selected value
+					);
+			
+			if(returnVal == JOptionPane.NO_OPTION)
+				return -1;
+			
+			destination = destination.replace(".pdf", ".bak");
+		}
+		
 		try {
+			
+			// Open the new file
 			pdf = new PdfDocument(new PdfWriter(destination));
+			
 		} catch (FileNotFoundException e) {
 			JOptionPane.showMessageDialog(null, "Could not save document to specified destination.", "Warning", JOptionPane.WARNING_MESSAGE);
 			e.printStackTrace();
@@ -64,6 +89,15 @@ public class PdfWorkspace {
 		}
 
 		pdf.close();
+		
+		
+		if(targetFileExists) {
+			testFile.delete(); // Delete the file we want to overwrite
+			
+			File finalFile = new File(destination); // Get the file we renamed to <destination.bak>
+			finalFile.renameTo(new File(destination.replace(".bak", ".pdf"))); // Rename back to .pdf
+		}
+		
 		return filesMerged;
 	}
 	
