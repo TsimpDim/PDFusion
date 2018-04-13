@@ -218,6 +218,7 @@ public class MainWindow extends JFrame{
 				    
 				    if (!filename.endsWith(".pdf")) {
 				      filename += ".pdf";
+				      destination += ".pdf";
 				    }
 				      
 					workspace.mergeFiles(filename, destination);
