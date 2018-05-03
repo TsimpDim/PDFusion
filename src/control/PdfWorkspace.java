@@ -70,7 +70,7 @@ public class PdfWorkspace{
 		
 		PdfMerger merger = new PdfMerger(pdf);
 		
-		progBar.showBar(true);
+		progBar.showBar();
 		AsyncMerger asyncMerger = new AsyncMerger(allFiles,targetFileExists,progBar,destination,testFile,merger,pdf);
 		asyncMerger.start();
 		

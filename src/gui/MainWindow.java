@@ -225,11 +225,8 @@ public class MainWindow extends JFrame{
 				    }
 				      
 					// Initialize progress bar
-					ResultsWindow progBar = new ResultsWindow(PdfWorkspace.totalFilesToMerge, "Preparing files...");
+					ResultsWindow progBar = new ResultsWindow(PdfWorkspace.totalFilesToMerge, "Preparing files...", filename, destination);
 					workspace.mergeFiles(filename, destination, progBar);
-
-					
-					
 				}
 				
 				
