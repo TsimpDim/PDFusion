@@ -196,12 +196,15 @@ public class MainWindow extends JFrame{
 				if(returnVal == JFileChooser.APPROVE_OPTION) {
 					File[] new_files = fileChooser.getSelectedFiles();
 					
+					
 					for(File file : new_files) {
+						
 						String curPath = file.getPath();
 						int fileIndex = PdfWorkspace.totalFiles;
 						
 						PdfFile newPDF = new PdfFile(curPath, true, fileIndex);
 						workspace.addFileToWorkspace(newPDF);
+
 					}
 					tableModel.updateData(workspace.getAllFiles());
 				}
@@ -221,7 +224,12 @@ public class MainWindow extends JFrame{
 				      destination += ".pdf";
 				    }
 				      
-					workspace.mergeFiles(filename, destination);
+					// Initialize progress bar
+					ResultsWindow progBar = new ResultsWindow(PdfWorkspace.totalFilesToMerge, "Preparing files...");
+					workspace.mergeFiles(filename, destination, progBar);
+
+					
+					
 				}
 				
 				

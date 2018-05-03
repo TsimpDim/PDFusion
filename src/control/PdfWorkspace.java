@@ -13,7 +13,9 @@ import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.kernel.utils.PdfMerger;
 
-public class PdfWorkspace {
+import gui.ResultsWindow;
+
+public class PdfWorkspace{
 
 	public static int totalFiles = 0;
 	public static int totalFilesToMerge = 0;
@@ -21,13 +23,12 @@ public class PdfWorkspace {
 	
 	/***
 	 * Merge all the files in the allFiles ArrayList
-	 * @return The amount of files merged
+	 * @return 0 if merge finished correctly, else return -1
 	 */
-	public int mergeFiles(String filename, String destination){
+	public int mergeFiles(String filename, String destination, ResultsWindow progBar){
 		
 		PdfDocument pdf = null;
 		boolean targetFileExists = false;
-		int filesMerged = 0;
 		
 		// Check if the conditions of the Workspace allow for files to be merged
 		if(totalFilesToMerge <= 0 || totalFiles <= 0) {
@@ -69,36 +70,11 @@ public class PdfWorkspace {
 		
 		PdfMerger merger = new PdfMerger(pdf);
 		
-		// Parse every file in the workspace and add it to the new file
-		for(PdfFile file : allFiles) {
-			
-			if(file.getToMerge()) {
-				PdfDocument sourcePdf = null;
-				try {
-					sourcePdf = new PdfDocument(new PdfReader(file.getPath()));
-				} catch (IOException e) {
-					JOptionPane.showMessageDialog(null, "Could not read file at " + file.getPath(), "Warning", JOptionPane.WARNING_MESSAGE);
-					e.printStackTrace();
-					continue;
-				}
-				merger.merge(sourcePdf, file.getPages());
-			
-				filesMerged++;
-				sourcePdf.close();
-			}
-		}
-
-		pdf.close();
+		progBar.showBar(true);
+		AsyncMerger asyncMerger = new AsyncMerger(allFiles,targetFileExists,progBar,destination,testFile,merger,pdf);
+		asyncMerger.start();
 		
-		
-		if(targetFileExists) {
-			testFile.delete(); // Delete the file we want to overwrite
-			
-			File finalFile = new File(destination); // Get the file we renamed to <destination.bak>
-			finalFile.renameTo(new File(destination.replace(".bak", ".pdf"))); // Rename back to .pdf
-		}
-		
-		return filesMerged;
+		return 0;
 	}
 	
 	/**
@@ -165,6 +141,7 @@ public class PdfWorkspace {
 		
 	}
 	
+	
 	@Override
 	public String toString() {
 		String finalString = "----- WORKSPACE\n";
@@ -181,5 +158,67 @@ public class PdfWorkspace {
 	
 	public PdfFile getFile(int index) {
 		return allFiles.get(index);
+	}
+}
+
+class AsyncMerger extends Thread {
+	
+	ArrayList<PdfFile> allFiles;
+	boolean targetFileExists;
+	ResultsWindow progBar; 
+	String destination;
+	File testFile;
+	PdfMerger merger;
+	PdfDocument pdf;
+
+	public AsyncMerger(ArrayList<PdfFile> allFiles, boolean targetFileExists, ResultsWindow progBar,
+			String destination, File testFile, PdfMerger merger, PdfDocument pdf) {
+
+		this.allFiles = allFiles;
+		this.targetFileExists = targetFileExists;
+		this.progBar = progBar;
+		this.destination = destination;
+		this.testFile = testFile;
+		this.merger = merger;
+		this.pdf = pdf;
+	}
+
+	@Override
+	public void run(){
+		
+		progBar.changeLabel("Merging files...");
+		
+		// Parse every file in the workspace and add it to the new file
+		for(PdfFile file : allFiles) {
+			
+			if(file.getToMerge()) {
+				PdfDocument sourcePdf = null;
+				try {
+					sourcePdf = new PdfDocument(new PdfReader(file.getPath()));
+				} catch (IOException e) {
+					JOptionPane.showMessageDialog(null, "Could not read file at " + file.getPath(), "Warning", JOptionPane.WARNING_MESSAGE);
+					e.printStackTrace();
+					continue;
+				}
+				merger.merge(sourcePdf, file.getPages());
+			
+				sourcePdf.close();
+				
+				progBar.incrementValue();
+			}
+		}
+
+		pdf.close();
+		
+		progBar.changeLabel("Making final preparations...");
+
+		if(targetFileExists) {
+			testFile.delete(); // Delete the file we want to overwrite
+			
+			File finalFile = new File(destination); // Get the file we renamed to <destination.bak>
+			finalFile.renameTo(new File(destination.replace(".bak", ".pdf"))); // Rename back to .pdf
+		}
+		
+		progBar.changeLabel("Done");
 	}
 }
