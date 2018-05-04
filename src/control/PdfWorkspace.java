@@ -22,7 +22,10 @@ public class PdfWorkspace{
 	private ArrayList<PdfFile> allFiles = new ArrayList<PdfFile>();
 	
 	/***
-	 * Merge all the files in the allFiles ArrayList
+	 * Merges all the files in the allFiles {@link ArrayList}
+	 * @param filename The filename of the resulting file e.g "export.pdf"
+	 * @param destination The full path of the resulting file location
+	 * @param progBar The results window
 	 * @return 0 if merge finished correctly, else return -1
 	 */
 	public int mergeFiles(String filename, String destination, ResultsWindow progBar){
@@ -78,8 +81,8 @@ public class PdfWorkspace{
 	}
 	
 	/**
-	 * Add a new PdfFile into the PdfWorkspace
-	 * @param p The PdfFile to add
+	 * Adds a new {@link PdfFile} into the {@link PdfWorkspace}
+	 * @param p The {@link PdfFile} to add
 	 */
 	public void addFileToWorkspace(PdfFile p) {
 		allFiles.add(p);
@@ -88,9 +91,9 @@ public class PdfWorkspace{
 	}
 	
 	/**
-	 * Remove files from the PdfWorkspace
-	 * @param p The PdfFile to add
-	 * @return True if the file was removed successfully, False if the file was not in the PdfWorkspace
+	 * Removes files from the {@link PdfWorkspace}
+	 * @param rows The indices of the selected rows
+	 * @return True if the file was removed successfully, False if the file was not in the {@link PdfWorkspace}
 	 */
 	public boolean removeFilesFromWorkspace(int[] rows) {
 		Integer[] newRows = Arrays.stream(rows).boxed().toArray( Integer[]::new );
@@ -108,6 +111,10 @@ public class PdfWorkspace{
 		return true;
 	}
 	
+	/**
+	 * Duplicates the files lying on the rows given
+	 * @param indices The indices of the selected rows
+	 */
 	public void duplicateFiles(int[] indices) {
 		if(indices.length > 0) {
 			for(int row : indices) {
@@ -119,6 +126,11 @@ public class PdfWorkspace{
 		}
 	}
 
+	/**
+	 * Moves selected files higher in the workspace
+	 * @param indices The indices of the selected rows
+	 * @return True if the files where moved successfully, else false
+	 */
 	public boolean moveFilesUp(int[] indices) {
 		for(Integer index : indices) {
 			if(index > -1)
@@ -129,6 +141,11 @@ public class PdfWorkspace{
 		return true;
 	}
 	
+	/**
+	 * Moves selected files lower in the workspace
+	 * @param indices The indices of the selected rows
+	 * @return True if the files where moved successfully, else false
+	 */
 	public boolean moveFilesDown(int[] indices) {
 		for(int i = indices.length - 1; i >= 0; i--) {
 			int el = indices[i];
@@ -161,6 +178,12 @@ public class PdfWorkspace{
 	}
 }
 
+/**
+ * This inner class is responsible for all the actions that have to happen in a separate thread during merge
+ * It is also responsible for altering the ResultsWindow object, updating the progress bar and the text next to it
+ * @author TsimpDim
+ *
+ */
 class AsyncMerger extends Thread {
 	
 	ArrayList<PdfFile> allFiles;
@@ -171,6 +194,16 @@ class AsyncMerger extends Thread {
 	PdfMerger merger;
 	PdfDocument pdf;
 
+	/**
+	 * Constructs an AsyncMerger object
+	 * @param allFiles An {@link ArrayList} containing all the files
+	 * @param targetFileExists Flag about whether the file we are trying to save to already exists (and needs to be overwritten) or not
+	 * @param progBar The {@link ResultsWindow} object we want to show.
+	 * @param destination The full path of the merged file save location
+	 * @param testFile The {@link File} we use to test whether or not the file we are saving to already exists or not
+	 * @param merger The {@link PdfMerger} we want to use
+	 * @param pdf The final {@link PdfDocument}.
+	 */
 	public AsyncMerger(ArrayList<PdfFile> allFiles, boolean targetFileExists, ResultsWindow progBar,
 			String destination, File testFile, PdfMerger merger, PdfDocument pdf) {
 

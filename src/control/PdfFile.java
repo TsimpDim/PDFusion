@@ -20,11 +20,11 @@ public class PdfFile extends File{
 	private int fileId;
 	
 	/**
-	 * Initialize a new PdfFile with page restrictions
+	 * Initializes a new {@link PdfFile} with page restrictions
 	 * @param path The file path
-	 * @param pages An ArrayList with all the pages to use. Set null for full pages.
-	 * @param toMerge 
-	 * @param fileId
+	 * @param pages An {@link ArrayList} with all the pages to use. Set null for full pages.
+	 * @param toMerge Whether or not this file should be merged
+	 * @param fileId File specific id
 	 */
 	public PdfFile(String path, ArrayList<Integer> pages, Boolean toMerge, int fileId) {
 		super(path);
@@ -35,10 +35,10 @@ public class PdfFile extends File{
 	}
 	
 	/**
-	 * Initialize a new PdfFile without page restrictions
+	 * Initializes a new {@link PdfFile} without page restrictions
 	 * @param path The file path
-	 * @param toMerge 
-	 * @param fileId
+	 * @param toMerge Whether or not this file should be merged
+	 * @param fileId File specific id
 	 */
 	public PdfFile(String path, Boolean toMerge, int fileId) {
 		super(path);
@@ -49,11 +49,11 @@ public class PdfFile extends File{
 	}
 	
 	/**
-	 * Initialize a new PdfFile with a string pages parameter
+	 * Initializes a new {@link PdfFile} with a string pages parameter
 	 * @param path The file path
-	 * @param pages A String containing the pages to include
-	 * @param toMerge
-	 * @param fileId
+	 * @param pages A {@link String} containing the pages to include
+	 * @param toMerge Whether or not this file should be merged
+	 * @param fileId File specific id
 	 */
 	public PdfFile(String path, String pages, Boolean toMerge, int fileId) {
 		super(path);
@@ -64,7 +64,7 @@ public class PdfFile extends File{
 	}
 
 	/**
-	 * Create a new PdfFile from an existing one
+	 * Creates a new {@link PdfFile} from an existing one
 	 * @param master The prototype for the new object
 	 */
 	public PdfFile(PdfFile master) {
@@ -92,7 +92,8 @@ public class PdfFile extends File{
 	}
 
 	/**
-	 * @return All available pages of current file in an ArrayList
+	 * Opens the current file and reads the amount of pages it has
+	 * @return An {@link ArrayList} with the same size as the pages on the current file
 	 */
 	public ArrayList<Integer> getAvailablePages(){
 		PdfDocument sourcePdf = null;
@@ -114,13 +115,20 @@ public class PdfFile extends File{
 		
 		return pages;
 	}
+	
 	public void setPages(ArrayList<Integer> pages) {
 		this.pages = pages;
 	}
 	
 	/**
-	 * Transforms a range String into an ArrayList
-	 * @param pages A String representation of the selection range
+	 * Transforms a range {@link String} into an {@link ArrayList}
+	 * e.g "1,3-5" = {1,3,4,5}<br>
+	 * e.g "2-" = {2,3,4,5,6....}<br>
+	 * e.g "1-3,5,6-8" = {1,2,3,5,6,7,8}<br>
+	 * e.g "-5" = <strong>error</strong><br>
+	 * e.g "10-15" = <strong>error</strong> <i>if the file does not have a 10th page</i><br>
+	 * e.g "12-32" = <strong>error</strong> <i>if the file does have a 12th page but not 32 pages</i><br>
+	 * @param pages A {@link String} representation of the selection range
 	 */
 	public void setPages(String pages) {
 		ArrayList<Integer> new_pages = new ArrayList<>();
@@ -145,7 +153,7 @@ public class PdfFile extends File{
 				try {
 					start = Integer.valueOf(splitRange[0]);
 				}catch(NumberFormatException e) {
-					wrongInputError();
+					showWrongInputError();
 					return;
 				}
 				
@@ -158,7 +166,7 @@ public class PdfFile extends File{
 				
 				// Start out of range
 				if(start > getAvailablePages().size()) {
-					wrongInputError();
+					showWrongInputError();
 					return;
 				}
 					
@@ -171,7 +179,7 @@ public class PdfFile extends File{
 				try {
 					new_pages.add(Integer.valueOf(str));
 				}catch(NumberFormatException e) {
-					wrongInputError();
+					showWrongInputError();
 					return;
 				}
 			}
@@ -180,7 +188,7 @@ public class PdfFile extends File{
 		this.pages = new_pages;
 	}
 
-	public void wrongInputError() {
+	public void showWrongInputError() {
 		JOptionPane.showMessageDialog(null, "Wrong input given. Only numbers, commas and dashes are allowed.\n"
 				+ "Make sure input is within available pages.", "Warning", JOptionPane.WARNING_MESSAGE);
 		this.pages = null;
@@ -201,6 +209,9 @@ public class PdfFile extends File{
 		this.fileId = fileId;
 	}
 
+	/**
+	 * @return A {@link String} version of the {@link ArrayList} containing the selected pages
+	 */
 	public String getPagesString() {
 		String finalString = "";
 		

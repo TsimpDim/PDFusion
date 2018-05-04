@@ -142,6 +142,9 @@ public class MainWindow extends JFrame{
 		this.setSize(1000,500);
 	}
 	
+	/**
+	 * Deletes selected rows from the workspace only if it is possible
+	 */
 	private void deleteSelectedRows() {
 		int selectedRow = fileTable.getSelectedRow();
 		if(selectedRow > -1) {
@@ -151,6 +154,9 @@ public class MainWindow extends JFrame{
 		}
 	}
 	
+	/**
+	 * Moves selected higher on the workspace only if it is possible
+	 */
 	private void moveSelectedRowsUp() {
 		int selectedRow = fileTable.getSelectedRow();
 		if(selectedRow > 0) {
@@ -162,6 +168,9 @@ public class MainWindow extends JFrame{
 		}
 	}
 
+	/**
+	 * Moves selected lower on the workspace only if it is possible
+	 */
 	private void moveSelectedRowsDown() {
 		int selectedRow = fileTable.getSelectedRow();
 		if(selectedRow > -1) {
@@ -173,6 +182,9 @@ public class MainWindow extends JFrame{
 		}
 	}
 	
+	/**
+	 * Duplicates selected rows
+	 */
 	private void duplicateSelectedRows() {
 		int [] selectedRows = fileTable.getSelectedRows();
 		int rows = PdfWorkspace.totalFiles;
