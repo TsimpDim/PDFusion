@@ -1,4 +1,4 @@
-![PDFusion_logo](https://raw.githubusercontent.com/TsimpDim/PDFusion/master/res/PDFusion_logo_full.png)
+![PDFusion_logo](https://raw.githubusercontent.com/TsimpDim/PDFusion/master/src/res/PDFusion_logo_full.png)
 
 # PDFusion
 PDFusion is a complete rewrite of [PDF_Merger](https://www.github.com/TsimpDim/Pdf_Merger) in Java using [iText 7 Community](https://itextpdf.com/itext-7-community).
