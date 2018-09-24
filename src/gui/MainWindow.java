@@ -16,11 +16,14 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
+import javax.swing.JMenuBar;
+import javax.swing.JMenu;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.UIManager;
+import javax.swing.border.Border;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import control.PdfFile;
@@ -45,6 +48,10 @@ public class MainWindow extends JFrame{
 	PdfFileTableModel tableModel;
     String[] tableColumnNames = {"id","path","include","pages"};
     JPopupMenu tableMenu;
+
+    JMenuBar menuBar;
+    JMenu selectionMenu;
+
     JMenuItem deleteSelection;
     JMenuItem moveSelectionUp;
     JMenuItem moveSelectionDown;
@@ -64,7 +71,11 @@ public class MainWindow extends JFrame{
 		container = new JPanel();
 		ButtonListener buttonListener = new ButtonListener();
 		KeyListener keyPressListener = new KeyPressListener();
-		
+		menuBar = new JMenuBar();
+		selectionMenu = new JMenu("Selection");
+
+
+
 		// Side panel
 		sidePanel = new JPanel();
 		openFilesButton = new JButton("Choose files");
@@ -117,10 +128,19 @@ public class MainWindow extends JFrame{
 	    fileTable.addKeyListener(keyPressListener);
 	    	    
 	    // Component setup
+		selectionMenu.add(deleteSelection);
+		selectionMenu.add(moveSelectionUp);
+		selectionMenu.add(moveSelectionDown);
+		selectionMenu.add(duplicateSelection);
+
+		menuBar.add(selectionMenu);
+
+
 	    sidePanel.add(openFilesButton);
 	    sidePanel.add(mergeFilesButton);
 	    
 	    container.setLayout(new BorderLayout());
+	    container.add(menuBar, BorderLayout.PAGE_START);
 	    container.add(sidePanel, BorderLayout.WEST);
 	    container.add(fileTablePane, BorderLayout.CENTER);
 	    
