@@ -69,21 +69,31 @@ public class MainWindow extends JFrame{
 		
 		container = new JPanel();
 		ButtonListener buttonListener = new ButtonListener();
-		KeyListener keyPressListener = new KeyPressListener();
 		menuBar = new JMenuBar();
 
 		// Open Menu
 		openMenu = new JMenu("Open");
+		openMenu.setMnemonic(KeyEvent.VK_O);
 		openFiles = new JMenuItem("Open files");
 		openFiles.addActionListener(buttonListener);
+		openFiles.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
 
 		// Selection Menu
 		selectionMenu = new JMenu("Selection");
+		selectionMenu.setMnemonic(KeyEvent.VK_S);
 
 		deleteSelectionMenuBar = new JMenuItem("Delete file(s)");
+		deleteSelectionMenuBar.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
+
 		moveSelectionUpMenuBar = new JMenuItem("Move up");
+		moveSelectionUpMenuBar.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_UP, ActionEvent.ALT_MASK));
+
 		moveSelectionDownMenuBar = new JMenuItem("Move down");
+		moveSelectionDownMenuBar.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, ActionEvent.ALT_MASK));
+
 		duplicateSelectionMenuBar = new JMenuItem("Duplicate selection");
+		duplicateSelectionMenuBar.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.CTRL_MASK));
+
 
 		deleteSelectionMenuBar.addActionListener(buttonListener);
 		moveSelectionUpMenuBar.addActionListener(buttonListener);
@@ -92,7 +102,10 @@ public class MainWindow extends JFrame{
 
 		// Edit Menu
 		editMenu = new JMenu("Edit");
+		editMenu.setMnemonic(KeyEvent.VK_E);
+
 		mergeFiles = new JMenuItem("Merge files");
+		mergeFiles.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, ActionEvent.CTRL_MASK));
 
 		fileChooser = new JFileChooser();
 		fileChooser.setMultiSelectionEnabled(true);
@@ -110,7 +123,7 @@ public class MainWindow extends JFrame{
 
 		PageCellRenderer leftAlignedRenderer = new  PageCellRenderer(works);
 		leftAlignedRenderer.setHorizontalAlignment(JLabel.LEFT);
-		
+
 		fileTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 		fileTable.getColumnModel().getColumn(0).setPreferredWidth(20);
 		fileTable.getColumnModel().getColumn(0).setCellRenderer(leftAlignedRenderer);
@@ -120,7 +133,6 @@ public class MainWindow extends JFrame{
 		fileTable.getColumnModel().getColumn(2).setCellRenderer(new PageCellRenderer(works));
 		fileTable.setAutoCreateRowSorter(true);
 		fileTablePane = new JScrollPane(fileTable);
-		fileTable.addKeyListener(keyPressListener);
 
 		// Table Right-Click Menu
 		tableMenu = new JPopupMenu();
@@ -287,50 +299,5 @@ public class MainWindow extends JFrame{
 			else if(arg0.getSource().equals(duplicateSelectionMenuBar) || arg0.getSource().equals(duplicateSelectionTable))
 				duplicateSelectedRows();
 		}	
-	}
-	
-	class KeyPressListener implements KeyListener {
-
-		// Currently pressed keys
-	    private final Set<Integer> pressed = new HashSet<>(); // We use a Set to guarantee key uniqueness
-
-		@Override
-		public void keyPressed(KeyEvent e) {
-			pressed.add(e.getKeyCode()); // On press add pressed key to set
-			
-			if(pressed.size() > 1) { // Multi key events
-				
-				// "Move" events
-				if(pressed.contains(KeyEvent.VK_ALT) && pressed.contains(KeyEvent.VK_UP))
-					moveSelectedRowsUp();
-				else if(pressed.contains(KeyEvent.VK_ALT) && pressed.contains(KeyEvent.VK_DOWN))
-					moveSelectedRowsDown();
-				
-				// "Duplicate selection" event
-				if(pressed.contains(KeyEvent.VK_CONTROL) && pressed.contains(KeyEvent.VK_D))
-					duplicateSelectedRows();
-				
-			}else { // Single key events
-
-				// "Delete" event
-				if(e.getKeyCode() == KeyEvent.VK_DELETE)
-					deleteSelectedRows();
-				
-				// "Clear selection" event
-				if(e.getKeyCode() == KeyEvent.VK_ESCAPE)
-					fileTable.clearSelection();
-			}
-			
-			
-		}
-
-		@Override
-		public void keyReleased(KeyEvent e) {
-			pressed.remove(e.getKeyCode());
-		}
-
-		@Override
-		public void keyTyped(KeyEvent e) {}
-		
 	}
 }
