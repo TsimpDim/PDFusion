@@ -39,20 +39,22 @@ public class MainWindow extends JFrame{
 	JPanel container;
 	
 	JPanel sidePanel;
-	JButton openFilesButton;
 	JButton mergeFilesButton;
 	JFileChooser fileChooser;
-	
+
 	JTable fileTable;
 	JScrollPane fileTablePane;
 	PdfFileTableModel tableModel;
-    String[] tableColumnNames = {"id","path","include","pages"};
-    JPopupMenu tableMenu;
+	String[] tableColumnNames = {"id","path","include","pages"};
+	JPopupMenu tableMenu;
 
-    JMenuBar menuBar;
-    JMenu selectionMenu;
+	JMenuBar menuBar;
+	JMenu selectionMenu;
+	JMenu openMenu;
 
-    JMenuItem deleteSelection;
+	JMenuItem openFiles;
+
+	JMenuItem deleteSelection;
     JMenuItem moveSelectionUp;
     JMenuItem moveSelectionDown;
     JMenuItem duplicateSelection;
@@ -72,52 +74,58 @@ public class MainWindow extends JFrame{
 		ButtonListener buttonListener = new ButtonListener();
 		KeyListener keyPressListener = new KeyPressListener();
 		menuBar = new JMenuBar();
+
+		// Open Menu
+		openMenu = new JMenu("Open");
+		openFiles = new JMenuItem("Open files");
+		openFiles.addActionListener(buttonListener);
+
+		// Selection Menu
 		selectionMenu = new JMenu("Selection");
 
+		deleteSelection = new JMenuItem("Delete file(s)");
+		moveSelectionUp = new JMenuItem("Move up");
+		moveSelectionDown = new JMenuItem("Move down");
+		duplicateSelection = new JMenuItem("Duplicate selection");
+
+		deleteSelection.addActionListener(buttonListener);
+		moveSelectionUp.addActionListener(buttonListener);
+		moveSelectionDown.addActionListener(buttonListener);
+		duplicateSelection.addActionListener(buttonListener);
 
 
 		// Side panel
 		sidePanel = new JPanel();
-		openFilesButton = new JButton("Choose files");
 		mergeFilesButton = new JButton("Merge files");
-	
+
 		fileChooser = new JFileChooser();
 		fileChooser.setMultiSelectionEnabled(true);
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("PDF Documents", "pdf");
 		fileChooser.setFileFilter(filter);
-		
-	    openFilesButton.addActionListener(buttonListener);
-	    mergeFilesButton.addActionListener(buttonListener);
-	    
-	    // Table
-	    fileTable = new JTable();
-	    tableModel = new PdfFileTableModel(null);
-	    fileTable.setFillsViewportHeight(true);
-	    fileTable.setModel(tableModel);
-	    
-	    fileTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-	    fileTable.getColumnModel().getColumn(0).setPreferredWidth(20);
-	    fileTable.getColumnModel().getColumn(1).setPreferredWidth(741);
-	    fileTable.getColumnModel().getColumn(2).setPreferredWidth(60);
-	    fileTable.getColumnModel().getColumn(3).setPreferredWidth(60);
-	    
-	    fileTable.getColumnModel().getColumn(2).setCellRenderer(new PageCellRenderer(works));
-	    
-	    fileTable.setAutoCreateRowSorter(true);
-	    
-	    fileTablePane = new JScrollPane(fileTable);
-	    
-	    tableMenu = new JPopupMenu();
-	    deleteSelection = new JMenuItem("Delete file(s)");
-	    moveSelectionUp = new JMenuItem("Move up");
-	    moveSelectionDown = new JMenuItem("Move down");
-	    duplicateSelection = new JMenuItem("Duplicate selection");
-	    
-	    deleteSelection.addActionListener(buttonListener);
-	    moveSelectionUp.addActionListener(buttonListener);
-	    moveSelectionDown.addActionListener(buttonListener);
-	    duplicateSelection.addActionListener(buttonListener);
-	    
+
+		mergeFilesButton.addActionListener(buttonListener);
+
+		// Table
+		fileTable = new JTable();
+		tableModel = new PdfFileTableModel(null);
+		fileTable.setFillsViewportHeight(true);
+		fileTable.setModel(tableModel);
+
+		fileTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+		fileTable.getColumnModel().getColumn(0).setPreferredWidth(20);
+		fileTable.getColumnModel().getColumn(1).setPreferredWidth(741);
+		fileTable.getColumnModel().getColumn(2).setPreferredWidth(60);
+		fileTable.getColumnModel().getColumn(3).setPreferredWidth(60);
+
+		fileTable.getColumnModel().getColumn(2).setCellRenderer(new PageCellRenderer(works));
+
+		fileTable.setAutoCreateRowSorter(true);
+
+		fileTablePane = new JScrollPane(fileTable);
+
+		// Table Right-Click Menu
+		tableMenu = new JPopupMenu();
+
 	    tableMenu.add(deleteSelection);
 	    tableMenu.add(moveSelectionUp);
 	    tableMenu.add(moveSelectionDown);
@@ -128,15 +136,18 @@ public class MainWindow extends JFrame{
 	    fileTable.addKeyListener(keyPressListener);
 	    	    
 	    // Component setup
+		openMenu.add(openFiles);
+
+
 		selectionMenu.add(deleteSelection);
 		selectionMenu.add(moveSelectionUp);
 		selectionMenu.add(moveSelectionDown);
 		selectionMenu.add(duplicateSelection);
 
+		menuBar.add(openMenu);
 		menuBar.add(selectionMenu);
 
 
-	    sidePanel.add(openFilesButton);
 	    sidePanel.add(mergeFilesButton);
 	    
 	    container.setLayout(new BorderLayout());
@@ -221,7 +232,7 @@ public class MainWindow extends JFrame{
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			
-			if(arg0.getSource().equals(openFilesButton)) { // Open files and add them into the workspace
+			if(arg0.getSource().equals(openFiles)) { // Open files and add them into the workspace
 				
 				int returnVal = fileChooser.showOpenDialog(MainWindow.this);
 				if(returnVal == JFileChooser.APPROVE_OPTION) {
