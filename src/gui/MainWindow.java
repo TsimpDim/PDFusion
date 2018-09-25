@@ -39,7 +39,6 @@ public class MainWindow extends JFrame{
 	JPanel container;
 	
 	JPanel sidePanel;
-	JButton mergeFilesButton;
 	JFileChooser fileChooser;
 
 	JTable fileTable;
@@ -51,8 +50,10 @@ public class MainWindow extends JFrame{
 	JMenuBar menuBar;
 	JMenu selectionMenu;
 	JMenu openMenu;
+	JMenu editMenu;
 
 	JMenuItem openFiles;
+	JMenuItem mergeFiles;
 
 	JMenuItem deleteSelection;
     JMenuItem moveSelectionUp;
@@ -93,17 +94,17 @@ public class MainWindow extends JFrame{
 		moveSelectionDown.addActionListener(buttonListener);
 		duplicateSelection.addActionListener(buttonListener);
 
-
-		// Side panel
-		sidePanel = new JPanel();
-		mergeFilesButton = new JButton("Merge files");
+		// Edit Menu
+		editMenu = new JMenu("Edit");
+		mergeFiles = new JMenuItem("Merge files");
 
 		fileChooser = new JFileChooser();
 		fileChooser.setMultiSelectionEnabled(true);
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("PDF Documents", "pdf");
 		fileChooser.setFileFilter(filter);
 
-		mergeFilesButton.addActionListener(buttonListener);
+		mergeFiles.addActionListener(buttonListener);
+
 
 		// Table
 		fileTable = new JTable();
@@ -138,6 +139,7 @@ public class MainWindow extends JFrame{
 	    // Component setup
 		openMenu.add(openFiles);
 
+		editMenu.add(mergeFiles);
 
 		selectionMenu.add(deleteSelection);
 		selectionMenu.add(moveSelectionUp);
@@ -145,14 +147,13 @@ public class MainWindow extends JFrame{
 		selectionMenu.add(duplicateSelection);
 
 		menuBar.add(openMenu);
+		menuBar.add(editMenu);
 		menuBar.add(selectionMenu);
 
 
-	    sidePanel.add(mergeFilesButton);
-	    
+
 	    container.setLayout(new BorderLayout());
 	    container.add(menuBar, BorderLayout.PAGE_START);
-	    container.add(sidePanel, BorderLayout.WEST);
 	    container.add(fileTablePane, BorderLayout.CENTER);
 	    
 		this.setContentPane(container);
@@ -251,7 +252,7 @@ public class MainWindow extends JFrame{
 					tableModel.updateData(workspace.getAllFiles());
 				}
 			
-			}else if(arg0.getSource().equals(mergeFilesButton)) { // Merge files
+			}else if(arg0.getSource().equals(mergeFiles)) { // Merge files
 
 				fileChooser.setSelectedFile(new File("export.pdf")); // Sets default filename
 				
