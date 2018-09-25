@@ -11,18 +11,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JMenuItem;
-import javax.swing.JMenuBar;
-import javax.swing.JMenu;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.UIManager;
+import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -68,13 +57,13 @@ public class MainWindow extends JFrame{
 	JMenuItem duplicateSelectionTable;
 	
 	public MainWindow(PdfWorkspace works) {
-		
+
 	    try {
 	        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 	    }catch(Exception ex) {
 	        ex.printStackTrace();
 	    }
-		
+
 	    // Base declarations
 		workspace = works;
 		
@@ -119,8 +108,12 @@ public class MainWindow extends JFrame{
 		fileTable.setFillsViewportHeight(true);
 		fileTable.setModel(tableModel);
 
+		PageCellRenderer leftAlignedRenderer = new  PageCellRenderer(works);
+		leftAlignedRenderer.setHorizontalAlignment(JLabel.LEFT);
+		
 		fileTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 		fileTable.getColumnModel().getColumn(0).setPreferredWidth(20);
+		fileTable.getColumnModel().getColumn(0).setCellRenderer(leftAlignedRenderer);
 		fileTable.getColumnModel().getColumn(1).setPreferredWidth(741);
 		fileTable.getColumnModel().getColumn(2).setPreferredWidth(60);
 		fileTable.getColumnModel().getColumn(3).setPreferredWidth(60);
