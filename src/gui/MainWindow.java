@@ -55,10 +55,17 @@ public class MainWindow extends JFrame{
 	JMenuItem openFiles;
 	JMenuItem mergeFiles;
 
-	JMenuItem deleteSelection;
-    JMenuItem moveSelectionUp;
-    JMenuItem moveSelectionDown;
-    JMenuItem duplicateSelection;
+	// These go in the header
+	JMenuItem deleteSelectionMenuBar;
+    JMenuItem moveSelectionUpMenuBar;
+    JMenuItem moveSelectionDownMenuBar;
+    JMenuItem duplicateSelectionMenuBar;
+
+    // These go in the right-click (pop up)menu
+	JMenuItem deleteSelectionTable;
+	JMenuItem moveSelectionUpTable;
+	JMenuItem moveSelectionDownTable;
+	JMenuItem duplicateSelectionTable;
 	
 	public MainWindow(PdfWorkspace works) {
 		
@@ -84,15 +91,15 @@ public class MainWindow extends JFrame{
 		// Selection Menu
 		selectionMenu = new JMenu("Selection");
 
-		deleteSelection = new JMenuItem("Delete file(s)");
-		moveSelectionUp = new JMenuItem("Move up");
-		moveSelectionDown = new JMenuItem("Move down");
-		duplicateSelection = new JMenuItem("Duplicate selection");
+		deleteSelectionMenuBar = new JMenuItem("Delete file(s)");
+		moveSelectionUpMenuBar = new JMenuItem("Move up");
+		moveSelectionDownMenuBar = new JMenuItem("Move down");
+		duplicateSelectionMenuBar = new JMenuItem("Duplicate selection");
 
-		deleteSelection.addActionListener(buttonListener);
-		moveSelectionUp.addActionListener(buttonListener);
-		moveSelectionDown.addActionListener(buttonListener);
-		duplicateSelection.addActionListener(buttonListener);
+		deleteSelectionMenuBar.addActionListener(buttonListener);
+		moveSelectionUpMenuBar.addActionListener(buttonListener);
+		moveSelectionDownMenuBar.addActionListener(buttonListener);
+		duplicateSelectionMenuBar.addActionListener(buttonListener);
 
 		// Edit Menu
 		editMenu = new JMenu("Edit");
@@ -117,40 +124,45 @@ public class MainWindow extends JFrame{
 		fileTable.getColumnModel().getColumn(1).setPreferredWidth(741);
 		fileTable.getColumnModel().getColumn(2).setPreferredWidth(60);
 		fileTable.getColumnModel().getColumn(3).setPreferredWidth(60);
-
 		fileTable.getColumnModel().getColumn(2).setCellRenderer(new PageCellRenderer(works));
-
 		fileTable.setAutoCreateRowSorter(true);
-
 		fileTablePane = new JScrollPane(fileTable);
+		fileTable.addKeyListener(keyPressListener);
 
 		// Table Right-Click Menu
 		tableMenu = new JPopupMenu();
 
-	    tableMenu.add(deleteSelection);
-	    tableMenu.add(moveSelectionUp);
-	    tableMenu.add(moveSelectionDown);
-	    tableMenu.add(duplicateSelection);
-	    
-	    fileTable.setComponentPopupMenu(tableMenu);
-	    
-	    fileTable.addKeyListener(keyPressListener);
-	    	    
+		deleteSelectionTable = new JMenuItem("Delete file(s)");
+		moveSelectionUpTable = new JMenuItem("Move up");
+		moveSelectionDownTable = new JMenuItem("Move down");
+		duplicateSelectionTable = new JMenuItem("Duplicate selection");
+
+		deleteSelectionTable.addActionListener(buttonListener);
+		moveSelectionUpTable.addActionListener(buttonListener);
+		moveSelectionDownTable.addActionListener(buttonListener);
+		duplicateSelectionTable.addActionListener(buttonListener);
+
+		tableMenu.add(deleteSelectionTable);
+		tableMenu.add(moveSelectionUpTable);
+		tableMenu.add(moveSelectionDownTable);
+		tableMenu.add(duplicateSelectionTable);
+
+		fileTable.setComponentPopupMenu(tableMenu);
+
+
 	    // Component setup
 		openMenu.add(openFiles);
 
 		editMenu.add(mergeFiles);
 
-		selectionMenu.add(deleteSelection);
-		selectionMenu.add(moveSelectionUp);
-		selectionMenu.add(moveSelectionDown);
-		selectionMenu.add(duplicateSelection);
+		selectionMenu.add(deleteSelectionMenuBar);
+		selectionMenu.add(moveSelectionUpMenuBar);
+		selectionMenu.add(moveSelectionDownMenuBar);
+		selectionMenu.add(duplicateSelectionMenuBar);
 
 		menuBar.add(openMenu);
 		menuBar.add(editMenu);
 		menuBar.add(selectionMenu);
-
-
 
 	    container.setLayout(new BorderLayout());
 	    container.add(menuBar, BorderLayout.PAGE_START);
@@ -273,13 +285,13 @@ public class MainWindow extends JFrame{
 				}
 				
 				
-			}else if(arg0.getSource().equals(deleteSelection)) 
+			}else if(arg0.getSource().equals(deleteSelectionMenuBar) || arg0.getSource().equals(deleteSelectionTable))
 				deleteSelectedRows();
-			else if(arg0.getSource().equals(moveSelectionUp)) 
+			else if(arg0.getSource().equals(moveSelectionUpMenuBar) || arg0.getSource().equals(moveSelectionUpTable))
 				moveSelectedRowsUp();
-			else if(arg0.getSource().equals(moveSelectionDown)) 
+			else if(arg0.getSource().equals(moveSelectionDownMenuBar) || arg0.getSource().equals(moveSelectionDownTable))
 				moveSelectedRowsDown();
-			else if(arg0.getSource().equals(duplicateSelection))
+			else if(arg0.getSource().equals(duplicateSelectionMenuBar) || arg0.getSource().equals(duplicateSelectionTable))
 				duplicateSelectedRows();
 		}	
 	}
@@ -287,7 +299,7 @@ public class MainWindow extends JFrame{
 	class KeyPressListener implements KeyListener {
 
 		// Currently pressed keys
-	    private final Set<Integer> pressed = new HashSet<Integer>(); // We use a Set to guarantee key uniqueness
+	    private final Set<Integer> pressed = new HashSet<>(); // We use a Set to guarantee key uniqueness
 
 		@Override
 		public void keyPressed(KeyEvent e) {
@@ -306,9 +318,9 @@ public class MainWindow extends JFrame{
 					duplicateSelectedRows();
 				
 			}else { // Single key events
-				
+
 				// "Delete" event
-				if(e.getKeyCode() == KeyEvent.VK_DELETE) 
+				if(e.getKeyCode() == KeyEvent.VK_DELETE)
 					deleteSelectedRows();
 				
 				// "Clear selection" event
