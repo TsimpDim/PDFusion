@@ -153,8 +153,7 @@ public class PdfFile extends File{
 				try {
 					start = Integer.valueOf(splitRange[0]);
 				}catch(NumberFormatException e) {
-					showWrongInputError();
-					return;
+					start = 1;
 				}
 				
 				// No end given
