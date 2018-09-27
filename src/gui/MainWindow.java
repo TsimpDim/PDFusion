@@ -197,8 +197,15 @@ public class MainWindow extends JFrame{
 		int selectedRow = fileTable.getSelectedRow();
 		if(selectedRow > -1) {
 			int[] selectedRows = fileTable.getSelectedRows();
-			if(workspace.removeFilesFromWorkspace(selectedRows))
+			if(workspace.removeFilesFromWorkspace(selectedRows)) {
 				tableModel.fireTableRowsDeleted(selectedRows[0], selectedRows[selectedRows.length - 1]);
+
+				try{
+					fileTable.setRowSelectionInterval(selectedRow, selectedRow);
+				}catch(java.lang.IllegalArgumentException e){
+					fileTable.setRowSelectionInterval(selectedRow -1, selectedRow -1);
+				}
+			}
 		}
 	}
 	
