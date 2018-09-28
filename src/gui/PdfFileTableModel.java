@@ -84,11 +84,17 @@ public class PdfFileTableModel extends AbstractTableModel{
 	    }else if(col == PAGES_COLUMN) {
 	    	
 	    	// Check if pages entered exist in the file
+			// First get all available pages
 	    	ArrayList<Integer> availableFilePages = new ArrayList<>(files.get(row).getPages());
+
+	    	// And then set the pages to what the user wants
 	    	files.get(row).setPages((String) value);
-	    	
+
+	    	// If what the user inputted is NOT in the available pages
 	    	if(!availableFilePages.containsAll(files.get(row).getPages())) {
-	    		files.get(row).setPages("all");
+	    		files.get(row).setPages("All");
+	    		files.get(row).setPageInput("All");
+
 				JOptionPane.showMessageDialog(null, "Selected page range is not available.", "Warning", JOptionPane.WARNING_MESSAGE);
 	    	}
 	    		
