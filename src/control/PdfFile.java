@@ -17,6 +17,8 @@ public class PdfFile extends File{
 	
 	private String path;
 	private ArrayList<Integer> pages = new ArrayList<Integer>();
+	private ArrayList<Integer> availablePages = null;
+	private Integer numberOfAvailablePages = -1;
 	private String pageInput = "All"; // User input in the 'pages' cell
 	private Boolean toMerge;
 	private int fileId;
@@ -108,24 +110,33 @@ public class PdfFile extends File{
 	 * @return An {@link ArrayList} with the same size as the pages on the current file
 	 */
 	public ArrayList<Integer> getAvailablePages(){
-		PdfDocument sourcePdf = null;
-		int numPages = -1;
-		ArrayList<Integer> pages = new ArrayList<>();
-		
-		try {
-			sourcePdf = new PdfDocument(new PdfReader(this.path));
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
+
+		// If available pages have never been calculated
+		if(this.availablePages == null) {
+			PdfDocument sourcePdf = null;
+			int numPages = -1;
+			ArrayList<Integer> pages = new ArrayList<>();
+
+			try {
+				sourcePdf = new PdfDocument(new PdfReader(this.path));
+			} catch (IOException e) {
+				e.printStackTrace();
+				return null;
+			}
+
+			numPages = sourcePdf.getNumberOfPages();
+			sourcePdf.close();
+
+			for (int i = 1; i < numPages + 1; i++)
+				pages.add(i);
+
+			this.availablePages = pages;
+
+			this.numberOfAvailablePages = pages.size();
+			return pages;
+		}else{
+			return this.availablePages;
 		}
-		
-		numPages = sourcePdf.getNumberOfPages();
-		sourcePdf.close();
-		
-		for(int i = 1; i < numPages + 1; i++)
-			pages.add(i);
-		
-		return pages;
 	}
 	
 	public void setPages(ArrayList<Integer> pages) {
@@ -150,14 +161,13 @@ public class PdfFile extends File{
 		Boolean hasGivenFirstPage = false;
 		Boolean hasGivenLastPage = false;
 
-		pages = pages.replaceAll("(-)\\1+", "-");
+		pages = pages.replaceAll("(-)\\1+", "-"); // Remove multiple consecutive dashes
 		splitStr = pages.split(Pattern.quote(","));
 
 		if(pages.toLowerCase().equals("all") || pages.equals("-")) {
 			this.pages = null;
 			return;
 		}
-
 
 		
 		for(String str : splitStr) {
@@ -206,7 +216,7 @@ public class PdfFile extends File{
 				// No end given
 				if(splitRange.length == 1) { // e.g "1-" -> splitRange = {"1"} so splitRange has length = 1
 					if(!hasGivenLastPage){
-						end = getAvailablePages().size();
+						end = getNumberOfAvailablePages();
 						hasGivenLastPage = true;
 					}else{
 						// e.g "1,5,100-,200-
@@ -228,7 +238,7 @@ public class PdfFile extends File{
 				}
 
 				// Start out of range
-				if(start > getAvailablePages().size()) {
+				if(start > getNumberOfAvailablePages()) {
 					showWrongInputError();
 					return;
 				}
@@ -263,6 +273,14 @@ public class PdfFile extends File{
 		this.pageInput = input;
 	}
 
+	public Integer getNumberOfAvailablePages(){
+
+		if(this.numberOfAvailablePages == -1)
+			getAvailablePages();
+
+		return this.numberOfAvailablePages;
+	}
+
 	public Boolean getToMerge() {
 		return toMerge;
 	}
@@ -294,7 +312,7 @@ public class PdfFile extends File{
 			finalString += pageInput;
 
 			if(pageInput.charAt(pageInput.length() -1) == '-')
-				finalString += String.valueOf(this.getPages().size() +1);
+				finalString += String.valueOf(this.getNumberOfAvailablePages());
 
 		}
 		

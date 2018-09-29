@@ -27,8 +27,8 @@ class PageCellRenderer extends DefaultTableCellRenderer {
         JLabel c = (JLabel)super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         
         String pages = table.getValueAt(row, column).toString();
-        ArrayList<Integer> availablePagesList = works.getFile(row).getAvailablePages();
-        String availablePagesString = String.valueOf(availablePagesList.get(availablePagesList.size() - 1));
+        Integer availablePages = works.getFile(row).getNumberOfAvailablePages();
+        String availablePagesString = String.valueOf(availablePages);
 
         c.setToolTipText("<html><i>e.g<i> 1,2,4-10,16,17-19" + "<br><br>"
         		+ "<div width=\"200\" style=\"word-break:break-all\"><br>"

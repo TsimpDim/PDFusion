@@ -233,6 +233,7 @@ class AsyncMerger extends Thread {
 					e.printStackTrace();
 					continue;
 				}
+
 				merger.merge(sourcePdf, file.getPages());
 			
 				sourcePdf.close();
