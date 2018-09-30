@@ -20,6 +20,7 @@ public class PdfWorkspace{
 	public static int totalFiles = 0;
 	public static int totalFilesToMerge = 0;
 	private ArrayList<PdfFile> allFiles = new ArrayList<PdfFile>();
+	private ArrayList<PdfFile> removedFiles = new ArrayList<>();
 	
 	/***
 	 * Merges all the files in the allFiles {@link ArrayList}
@@ -157,8 +158,18 @@ public class PdfWorkspace{
 		return true;
 		
 	}
-	
-	
+
+	public void addRemovedFile(PdfFile file){
+		removedFiles.add(file);
+	}
+
+	public void undoPreviousDeletion(){
+
+		for(PdfFile file : removedFiles)
+			this.addFileToWorkspace(file);
+
+	}
+
 	@Override
 	public String toString() {
 		String finalString = "----- WORKSPACE\n";

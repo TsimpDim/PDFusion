@@ -197,6 +197,12 @@ public class MainWindow extends JFrame{
 		int selectedRow = fileTable.getSelectedRow();
 		if(selectedRow > -1) {
 			int[] selectedRows = fileTable.getSelectedRows();
+
+			// Save removed files to the workspace for chance of undoing the deletion
+			for(int row : selectedRows){
+				workspace.addRemovedFile(workspace.getFile(row));
+			}
+
 			if(workspace.removeFilesFromWorkspace(selectedRows)) {
 				tableModel.fireTableRowsDeleted(selectedRows[0], selectedRows[selectedRows.length - 1]);
 
