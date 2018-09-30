@@ -168,6 +168,8 @@ public class PdfWorkspace{
 		for(PdfFile file : removedFiles)
 			this.addFileToWorkspace(file);
 
+		removedFiles.clear();
+
 	}
 
 	@Override

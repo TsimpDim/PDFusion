@@ -49,12 +49,14 @@ public class MainWindow extends JFrame{
     JMenuItem moveSelectionUpMenuBar;
     JMenuItem moveSelectionDownMenuBar;
     JMenuItem duplicateSelectionMenuBar;
+    JMenuItem undoDeletionMenubar;
 
     // These go in the right-click (pop up)menu
 	JMenuItem deleteSelectionTable;
 	JMenuItem moveSelectionUpTable;
 	JMenuItem moveSelectionDownTable;
 	JMenuItem duplicateSelectionTable;
+	JMenuItem undoDeletionTable;
 	
 	public MainWindow(PdfWorkspace works) {
 
@@ -94,11 +96,15 @@ public class MainWindow extends JFrame{
 		duplicateSelectionMenuBar = new JMenuItem("Duplicate selection");
 		duplicateSelectionMenuBar.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.CTRL_MASK));
 
+		undoDeletionMenubar = new JMenuItem("Undo previous deletion");
+		undoDeletionMenubar.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
+
 
 		deleteSelectionMenuBar.addActionListener(buttonListener);
 		moveSelectionUpMenuBar.addActionListener(buttonListener);
 		moveSelectionDownMenuBar.addActionListener(buttonListener);
 		duplicateSelectionMenuBar.addActionListener(buttonListener);
+		undoDeletionMenubar.addActionListener(buttonListener);
 
 		// Edit Menu
 		editMenu = new JMenu("Edit");
@@ -141,16 +147,19 @@ public class MainWindow extends JFrame{
 		moveSelectionUpTable = new JMenuItem("Move up");
 		moveSelectionDownTable = new JMenuItem("Move down");
 		duplicateSelectionTable = new JMenuItem("Duplicate selection");
+		undoDeletionTable = new JMenuItem("Undo previous deletion");
 
 		deleteSelectionTable.addActionListener(buttonListener);
 		moveSelectionUpTable.addActionListener(buttonListener);
 		moveSelectionDownTable.addActionListener(buttonListener);
 		duplicateSelectionTable.addActionListener(buttonListener);
+		undoDeletionTable.addActionListener(buttonListener);
 
 		tableMenu.add(deleteSelectionTable);
 		tableMenu.add(moveSelectionUpTable);
 		tableMenu.add(moveSelectionDownTable);
 		tableMenu.add(duplicateSelectionTable);
+		tableMenu.add(undoDeletionTable);
 
 		fileTable.setComponentPopupMenu(tableMenu);
 
@@ -164,6 +173,7 @@ public class MainWindow extends JFrame{
 		selectionMenu.add(moveSelectionUpMenuBar);
 		selectionMenu.add(moveSelectionDownMenuBar);
 		selectionMenu.add(duplicateSelectionMenuBar);
+		selectionMenu.add(undoDeletionMenubar);
 
 		menuBar.add(openMenu);
 		menuBar.add(editMenu);
@@ -205,6 +215,10 @@ public class MainWindow extends JFrame{
 
 			if(workspace.removeFilesFromWorkspace(selectedRows)) {
 				tableModel.fireTableRowsDeleted(selectedRows[0], selectedRows[selectedRows.length - 1]);
+
+				// If the delete file was the only file then we have nothing to select
+				if(workspace.totalFiles == 0)
+					return;
 
 				try{
 					fileTable.setRowSelectionInterval(selectedRow, selectedRow);
@@ -254,7 +268,15 @@ public class MainWindow extends JFrame{
 		
 		tableModel.fireTableDataChanged();
 		fileTable.setRowSelectionInterval(rows, rows + selectedRows.length - 1);
-		
+
+	}
+
+	/**
+	 * Undoes the last deletion
+	 */
+	private void undoPreviousDeletion(){
+		workspace.undoPreviousDeletion();
+		tableModel.fireTableDataChanged();
 	}
 		
 	
@@ -311,6 +333,8 @@ public class MainWindow extends JFrame{
 				moveSelectedRowsDown();
 			else if(arg0.getSource().equals(duplicateSelectionMenuBar) || arg0.getSource().equals(duplicateSelectionTable))
 				duplicateSelectedRows();
+			else if(arg0.getSource().equals(undoDeletionMenubar) || arg0.getSource().equals(undoDeletionTable))
+				undoPreviousDeletion();
 		}	
 	}
 }
