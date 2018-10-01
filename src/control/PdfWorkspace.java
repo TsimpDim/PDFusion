@@ -165,8 +165,12 @@ public class PdfWorkspace{
 
 	public void undoPreviousDeletion(){
 
-		for(PdfFile file : removedFiles)
+		for(PdfFile file : removedFiles) {
 			this.addFileToWorkspace(file);
+
+			totalFiles--;
+			totalFilesToMerge--;
+		}
 
 		removedFiles.clear();
 
