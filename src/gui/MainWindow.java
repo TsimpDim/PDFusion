@@ -7,10 +7,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
+import java.security.Key;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.print.DocFlavor;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -24,9 +26,9 @@ public class MainWindow extends JFrame{
 	private static final long serialVersionUID = -6007278116878081383L;
 
 	PdfWorkspace workspace = null;
-	
+
 	JPanel container;
-	
+
 	JPanel sidePanel;
 	JFileChooser fileChooser;
 
@@ -44,20 +46,12 @@ public class MainWindow extends JFrame{
 	JMenuItem openFiles;
 	JMenuItem mergeFiles;
 
-	// These go in the header
-	JMenuItem deleteSelectionMenuBar;
-    JMenuItem moveSelectionUpMenuBar;
-    JMenuItem moveSelectionDownMenuBar;
-    JMenuItem duplicateSelectionMenuBar;
-    JMenuItem undoDeletionMenubar;
+	DeleteRowsAction deleteSelectedRowsAction = new DeleteRowsAction("Delete selected file(s)", null,null, null, KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
+	MoveRowsUpAction moveSelectionUpAction = new MoveRowsUpAction("Move file up", null, null, null, KeyStroke.getKeyStroke(KeyEvent.VK_UP, ActionEvent.ALT_MASK));
+	MoveRowsDownAction moveSelectionDownAction = new MoveRowsDownAction("Move file down", null, null, null, KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, ActionEvent.ALT_MASK));
+	DuplicateRowsAction duplicateSelectionAction = new DuplicateRowsAction("Delete selected rows", null, null, null, KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.CTRL_MASK));
+	UndoDeletionAction undoDeletionAction = new UndoDeletionAction("Undo deletion", null, null, null, KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
 
-    // These go in the right-click (pop up)menu
-	JMenuItem deleteSelectionTable;
-	JMenuItem moveSelectionUpTable;
-	JMenuItem moveSelectionDownTable;
-	JMenuItem duplicateSelectionTable;
-	JMenuItem undoDeletionTable;
-	
 	public MainWindow(PdfWorkspace works) {
 
 	    try {
@@ -68,7 +62,7 @@ public class MainWindow extends JFrame{
 
 	    // Base declarations
 		workspace = works;
-		
+
 		container = new JPanel();
 		ButtonListener buttonListener = new ButtonListener();
 		menuBar = new JMenuBar();
@@ -84,27 +78,6 @@ public class MainWindow extends JFrame{
 		selectionMenu = new JMenu("Selection");
 		selectionMenu.setMnemonic(KeyEvent.VK_S);
 
-		deleteSelectionMenuBar = new JMenuItem("Delete file(s)");
-		deleteSelectionMenuBar.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
-
-		moveSelectionUpMenuBar = new JMenuItem("Move up");
-		moveSelectionUpMenuBar.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_UP, ActionEvent.ALT_MASK));
-
-		moveSelectionDownMenuBar = new JMenuItem("Move down");
-		moveSelectionDownMenuBar.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, ActionEvent.ALT_MASK));
-
-		duplicateSelectionMenuBar = new JMenuItem("Duplicate selection");
-		duplicateSelectionMenuBar.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.CTRL_MASK));
-
-		undoDeletionMenubar = new JMenuItem("Undo previous deletion");
-		undoDeletionMenubar.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
-
-
-		deleteSelectionMenuBar.addActionListener(buttonListener);
-		moveSelectionUpMenuBar.addActionListener(buttonListener);
-		moveSelectionDownMenuBar.addActionListener(buttonListener);
-		duplicateSelectionMenuBar.addActionListener(buttonListener);
-		undoDeletionMenubar.addActionListener(buttonListener);
 
 		// Edit Menu
 		editMenu = new JMenu("Edit");
@@ -143,23 +116,11 @@ public class MainWindow extends JFrame{
 		// Table Right-Click Menu
 		tableMenu = new JPopupMenu();
 
-		deleteSelectionTable = new JMenuItem("Delete file(s)");
-		moveSelectionUpTable = new JMenuItem("Move up");
-		moveSelectionDownTable = new JMenuItem("Move down");
-		duplicateSelectionTable = new JMenuItem("Duplicate selection");
-		undoDeletionTable = new JMenuItem("Undo previous deletion");
-
-		deleteSelectionTable.addActionListener(buttonListener);
-		moveSelectionUpTable.addActionListener(buttonListener);
-		moveSelectionDownTable.addActionListener(buttonListener);
-		duplicateSelectionTable.addActionListener(buttonListener);
-		undoDeletionTable.addActionListener(buttonListener);
-
-		tableMenu.add(deleteSelectionTable);
-		tableMenu.add(moveSelectionUpTable);
-		tableMenu.add(moveSelectionDownTable);
-		tableMenu.add(duplicateSelectionTable);
-		tableMenu.add(undoDeletionTable);
+		tableMenu.add(deleteSelectedRowsAction);
+		tableMenu.add(moveSelectionUpAction);
+		tableMenu.add(moveSelectionDownAction);
+		tableMenu.add(duplicateSelectionAction);
+		tableMenu.add(undoDeletionAction);
 
 		fileTable.setComponentPopupMenu(tableMenu);
 
@@ -169,11 +130,11 @@ public class MainWindow extends JFrame{
 
 		editMenu.add(mergeFiles);
 
-		selectionMenu.add(deleteSelectionMenuBar);
-		selectionMenu.add(moveSelectionUpMenuBar);
-		selectionMenu.add(moveSelectionDownMenuBar);
-		selectionMenu.add(duplicateSelectionMenuBar);
-		selectionMenu.add(undoDeletionMenubar);
+		selectionMenu.add(deleteSelectedRowsAction);
+		selectionMenu.add(moveSelectionUpAction);
+		selectionMenu.add(moveSelectionDownAction);
+		selectionMenu.add(duplicateSelectionAction);
+		selectionMenu.add(undoDeletionAction);
 
 		menuBar.add(openMenu);
 		menuBar.add(editMenu);
@@ -182,9 +143,9 @@ public class MainWindow extends JFrame{
 	    container.setLayout(new BorderLayout());
 	    container.add(menuBar, BorderLayout.PAGE_START);
 	    container.add(fileTablePane, BorderLayout.CENTER);
-	    
+
 		this.setContentPane(container);
-		
+
 		this.setTitle("PDFusion Workspace");
 		ArrayList<Image> icons = new ArrayList<Image>();
 		icons.add(new ImageIcon(getClass().getResource("/res/PDFusion_logo_16.png")).getImage());
@@ -194,147 +155,190 @@ public class MainWindow extends JFrame{
 		icons.add(new ImageIcon(getClass().getResource("/res/PDFusion_logo_64.png")).getImage());
 		icons.add(new ImageIcon(getClass().getResource("/res/PDFusion_logo_128.png")).getImage());
 		this.setIconImages(icons);
-		
+
 		this.setVisible(true);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setSize(1000,500);
 	}
-	
-	/**
-	 * Deletes selected rows from the workspace only if it is possible
-	 */
-	private void deleteSelectedRows() {
-		int selectedRow = fileTable.getSelectedRow();
-		if(selectedRow > -1) {
-			int[] selectedRows = fileTable.getSelectedRows();
 
-			// Save removed files to the workspace for chance of undoing the deletion
-			for(int row : selectedRows){
-				workspace.addRemovedFile(workspace.getFile(row));
-			}
-
-			if(workspace.removeFilesFromWorkspace(selectedRows)) {
-				tableModel.fireTableRowsDeleted(selectedRows[0], selectedRows[selectedRows.length - 1]);
-
-				// If the delete file was the only file then we have nothing to select
-				if(workspace.totalFiles == 0)
-					return;
-
-				try{
-					fileTable.setRowSelectionInterval(selectedRow, selectedRow);
-				}catch(java.lang.IllegalArgumentException e){
-					fileTable.setRowSelectionInterval(selectedRow -1, selectedRow -1);
-				}
-			}
-		}
-	}
-	
-	/**
-	 * Moves selected higher on the workspace only if it is possible
-	 */
-	private void moveSelectedRowsUp() {
-		int selectedRow = fileTable.getSelectedRow();
-		if(selectedRow > 0) {
-			int[] selectedRows = fileTable.getSelectedRows();
-			if(workspace.moveFilesUp(selectedRows)) {
-				tableModel.fireTableDataChanged();
-				fileTable.setRowSelectionInterval(selectedRows[0] - 1, selectedRows[selectedRows.length - 1] - 1); // Move selection upwards
-			}
-		}
-	}
-
-	/**
-	 * Moves selected lower on the workspace only if it is possible
-	 */
-	private void moveSelectedRowsDown() {
-		int selectedRow = fileTable.getSelectedRow();
-		if(selectedRow > -1) {
-			int[] selectedRows = fileTable.getSelectedRows();
-			if(workspace.moveFilesDown(selectedRows)) {
-				tableModel.fireTableDataChanged();
-				fileTable.setRowSelectionInterval(selectedRows[0] + 1, selectedRows[selectedRows.length - 1] + 1); // Move selection downwards
-			}
-		}
-	}
-	
-	/**
-	 * Duplicates selected rows
-	 */
-	private void duplicateSelectedRows() {
-		int [] selectedRows = fileTable.getSelectedRows();
-		int rows = PdfWorkspace.totalFiles;
-		
-		workspace.duplicateFiles(selectedRows);
-		
-		tableModel.fireTableDataChanged();
-		fileTable.setRowSelectionInterval(rows, rows + selectedRows.length - 1);
-
-	}
-
-	/**
-	 * Undoes the last deletion
-	 */
-	private void undoPreviousDeletion(){
-		workspace.undoPreviousDeletion();
-		tableModel.fireTableDataChanged();
-	}
-		
-	
 	class ButtonListener implements ActionListener {
-		
+
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			
-			if(arg0.getSource().equals(openFiles)) { // Open files and add them into the workspace
-				
+
+			if (arg0.getSource().equals(openFiles)) { // Open files and add them into the workspace
+
 				int returnVal = fileChooser.showOpenDialog(MainWindow.this);
-				if(returnVal == JFileChooser.APPROVE_OPTION) {
+				if (returnVal == JFileChooser.APPROVE_OPTION) {
 					File[] new_files = fileChooser.getSelectedFiles();
-					
-					
-					for(File file : new_files) {
-						
+
+
+					for (File file : new_files) {
+
 						String curPath = file.getPath();
 						int fileIndex = PdfWorkspace.totalFiles;
-						
+
 						PdfFile newPDF = new PdfFile(curPath, true, fileIndex);
 						workspace.addFileToWorkspace(newPDF);
 
 					}
 					tableModel.updateData(workspace.getAllFiles());
 				}
-			
-			}else if(arg0.getSource().equals(mergeFiles)) { // Merge files
+
+			} else if (arg0.getSource().equals(mergeFiles)) { // Merge files
 
 				fileChooser.setSelectedFile(new File("export.pdf")); // Sets default filename
-				
+
 				int returnVal = fileChooser.showSaveDialog(MainWindow.this);
-				if(returnVal == JFileChooser.APPROVE_OPTION) {
-				    
-				    String filename = fileChooser.getSelectedFile().getName().toLowerCase();
-				    String destination = fileChooser.getSelectedFile().getPath();
-				    
-				    if (!filename.endsWith(".pdf")) {
-				      filename += ".pdf";
-				      destination += ".pdf";
-				    }
-				      
+				if (returnVal == JFileChooser.APPROVE_OPTION) {
+
+					String filename = fileChooser.getSelectedFile().getName().toLowerCase();
+					String destination = fileChooser.getSelectedFile().getPath();
+
+					if (!filename.endsWith(".pdf")) {
+						filename += ".pdf";
+						destination += ".pdf";
+					}
+
 					// Initialize progress bar
 					ResultsWindow progBar = new ResultsWindow(PdfWorkspace.totalFilesToMerge, "Preparing files...", filename, destination);
 					workspace.mergeFiles(filename, destination, progBar);
 				}
-				
-				
-			}else if(arg0.getSource().equals(deleteSelectionMenuBar) || arg0.getSource().equals(deleteSelectionTable))
-				deleteSelectedRows();
-			else if(arg0.getSource().equals(moveSelectionUpMenuBar) || arg0.getSource().equals(moveSelectionUpTable))
-				moveSelectedRowsUp();
-			else if(arg0.getSource().equals(moveSelectionDownMenuBar) || arg0.getSource().equals(moveSelectionDownTable))
-				moveSelectedRowsDown();
-			else if(arg0.getSource().equals(duplicateSelectionMenuBar) || arg0.getSource().equals(duplicateSelectionTable))
-				duplicateSelectedRows();
-			else if(arg0.getSource().equals(undoDeletionMenubar) || arg0.getSource().equals(undoDeletionTable))
-				undoPreviousDeletion();
-		}	
+			}
+		}
+	}
+
+	/**
+	 * Action for deleting selected rows from the workspace only if it is possible
+	 */
+	class DeleteRowsAction extends AbstractAction {
+
+		public DeleteRowsAction(String text, ImageIcon icon,
+						  String desc, Integer mnemonic, KeyStroke accelerator) {
+			super(text, icon);
+			putValue(SHORT_DESCRIPTION, desc);
+			putValue(MNEMONIC_KEY, mnemonic);
+			putValue(ACCELERATOR_KEY, accelerator);
+		}
+
+		public void actionPerformed(ActionEvent e){
+
+			int selectedRow = fileTable.getSelectedRow();
+			if(selectedRow > -1) {
+				int[] selectedRows = fileTable.getSelectedRows();
+
+				// Save removed files to the workspace for chance of undoing the deletion
+				for(int row : selectedRows){
+					workspace.addRemovedFile(workspace.getFile(row));
+				}
+
+				if(workspace.removeFilesFromWorkspace(selectedRows)) {
+					tableModel.fireTableRowsDeleted(selectedRows[0], selectedRows[selectedRows.length - 1]);
+
+					// If the deleted file was the only file then we have nothing to select
+					if(workspace.totalFiles == 0)
+						return;
+
+					try{
+						fileTable.setRowSelectionInterval(selectedRow, selectedRow);
+					}catch(java.lang.IllegalArgumentException er){
+						fileTable.setRowSelectionInterval(selectedRow -1, selectedRow -1);
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Action for moving selected rows higher on the workspace only if it is possible
+	 */
+	class MoveRowsUpAction extends AbstractAction{
+
+		public MoveRowsUpAction(String text, ImageIcon icon,
+								String desc, Integer mnemonic, KeyStroke accelerator) {
+			super(text, icon);
+			putValue(SHORT_DESCRIPTION, desc);
+			putValue(MNEMONIC_KEY, mnemonic);
+			putValue(ACCELERATOR_KEY, accelerator);
+		}
+
+		public void actionPerformed(ActionEvent e){
+			int selectedRow = fileTable.getSelectedRow();
+			if(selectedRow > 0) {
+				int[] selectedRows = fileTable.getSelectedRows();
+				if(workspace.moveFilesUp(selectedRows)) {
+					tableModel.fireTableDataChanged();
+					fileTable.setRowSelectionInterval(selectedRows[0] - 1, selectedRows[selectedRows.length - 1] - 1); // Move selection upwards
+				}
+			}
+		}
+	}
+
+	/**
+	 * Action for moving selected rows lower on the workspace only if it is possible
+	 */
+	class MoveRowsDownAction extends AbstractAction{
+
+		public MoveRowsDownAction(String text, ImageIcon icon,
+								String desc, Integer mnemonic, KeyStroke accelerator) {
+			super(text, icon);
+			putValue(SHORT_DESCRIPTION, desc);
+			putValue(MNEMONIC_KEY, mnemonic);
+			putValue(ACCELERATOR_KEY, accelerator);
+		}
+
+		public void actionPerformed(ActionEvent e){
+			int selectedRow = fileTable.getSelectedRow();
+			if(selectedRow > -1) {
+				int[] selectedRows = fileTable.getSelectedRows();
+				if(workspace.moveFilesDown(selectedRows)) {
+					tableModel.fireTableDataChanged();
+					fileTable.setRowSelectionInterval(selectedRows[0] + 1, selectedRows[selectedRows.length - 1] + 1); // Move selection downwards
+				}
+			}
+		}
+	}
+
+	/**
+	 * Duplicates selected rows
+	 */
+	class DuplicateRowsAction extends AbstractAction{
+
+		public DuplicateRowsAction(String text, ImageIcon icon,
+								  String desc, Integer mnemonic, KeyStroke accelerator) {
+			super(text, icon);
+			putValue(SHORT_DESCRIPTION, desc);
+			putValue(MNEMONIC_KEY, mnemonic);
+			putValue(ACCELERATOR_KEY, accelerator);
+		}
+
+		public void actionPerformed(ActionEvent e){
+			int [] selectedRows = fileTable.getSelectedRows();
+			int rows = PdfWorkspace.totalFiles;
+
+			workspace.duplicateFiles(selectedRows);
+
+			tableModel.fireTableDataChanged();
+			fileTable.setRowSelectionInterval(rows, rows + selectedRows.length - 1);
+		}
+	}
+
+	/**
+	 * Undoes the last deletion
+	 */
+	class UndoDeletionAction extends AbstractAction{
+
+		public UndoDeletionAction(String text, ImageIcon icon,
+								   String desc, Integer mnemonic, KeyStroke accelerator) {
+			super(text, icon);
+			putValue(SHORT_DESCRIPTION, desc);
+			putValue(MNEMONIC_KEY, mnemonic);
+			putValue(ACCELERATOR_KEY, accelerator);
+		}
+
+		public void actionPerformed(ActionEvent e){
+			workspace.undoPreviousDeletion();
+			tableModel.fireTableDataChanged();
+		}
 	}
 }
