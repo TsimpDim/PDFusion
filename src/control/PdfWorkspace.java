@@ -98,10 +98,19 @@ public class PdfWorkspace{
 	public boolean removeFilesFromWorkspace(int[] rows) {
 		Integer[] newRows = Arrays.stream(rows).boxed().toArray( Integer[]::new );
 		Arrays.sort(newRows, Collections.reverseOrder());
+		ArrayList<PdfFile> backupRemovedFiles = new ArrayList<>(removedFiles); // Keep a backup in case deletion fails
+
+		removedFiles.clear(); // Forget previous deleted files
 		for(Integer row : newRows) {
-			if(row > allFiles.size())
+			if(row > allFiles.size()) {
+				removedFiles = new ArrayList<>(backupRemovedFiles); // Restore the previous deleted files in case the deletion fails
 				return false;
-			
+			}
+
+			// Save removed files to the workspace for chance of undoing the deletion
+			removedFiles.add(this.getFile(row));
+
+			// Delete them
 			allFiles.remove(allFiles.get(row));
 			
 			totalFiles--;
@@ -172,7 +181,6 @@ public class PdfWorkspace{
 		}
 
 		removedFiles.clear();
-
 	}
 
 	@Override
