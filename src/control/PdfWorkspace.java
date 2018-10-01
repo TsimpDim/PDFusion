@@ -24,12 +24,11 @@ public class PdfWorkspace{
 	
 	/***
 	 * Merges all the files in the allFiles {@link ArrayList}
-	 * @param filename The filename of the resulting file e.g "export.pdf"
 	 * @param destination The full path of the resulting file location
 	 * @param progBar The results window
 	 * @return 0 if merge finished correctly, else return -1
 	 */
-	public int mergeFiles(String filename, String destination, ResultsWindow progBar){
+	public int mergeFiles(String destination, ResultsWindow progBar){
 		
 		PdfDocument pdf = null;
 		boolean targetFileExists = false;

@@ -38,9 +38,8 @@ public class ResultsWindow extends JFrame{
 	int min = 0;
 	int max = 0;
 	
-	public ResultsWindow(int max, String labelStr, String filename, String destination) {
+	public ResultsWindow(int max, String labelStr,  String destination) {
 		this.max = max;
-		this.filename = filename;
 		this.destination = destination;
 		
 		ButtonListener buttonListener = new ButtonListener();

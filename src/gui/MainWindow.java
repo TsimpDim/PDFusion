@@ -29,13 +29,11 @@ public class MainWindow extends JFrame{
 
 	JPanel container;
 
-	JPanel sidePanel;
 	JFileChooser fileChooser;
 
 	JTable fileTable;
 	JScrollPane fileTablePane;
 	PdfFileTableModel tableModel;
-	String[] tableColumnNames = {"id","path","include","pages"};
 	JPopupMenu tableMenu;
 
 	JMenuBar menuBar;
@@ -192,17 +190,15 @@ public class MainWindow extends JFrame{
 				int returnVal = fileChooser.showSaveDialog(MainWindow.this);
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
 
-					String filename = fileChooser.getSelectedFile().getName().toLowerCase();
 					String destination = fileChooser.getSelectedFile().getPath();
 
-					if (!filename.endsWith(".pdf")) {
-						filename += ".pdf";
+					if (!destination.endsWith(".pdf"))
 						destination += ".pdf";
-					}
+
 
 					// Initialize progress bar
-					ResultsWindow progBar = new ResultsWindow(PdfWorkspace.totalFilesToMerge, "Preparing files...", filename, destination);
-					workspace.mergeFiles(filename, destination, progBar);
+					ResultsWindow progBar = new ResultsWindow(PdfWorkspace.totalFilesToMerge, "Preparing files...", destination);
+					workspace.mergeFiles(destination, progBar);
 				}
 			}
 		}
