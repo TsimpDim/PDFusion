@@ -116,7 +116,7 @@ public class PdfWorkspace{
 			totalFiles--;
 			totalFilesToMerge--;
 		}
-		
+
 		return true;
 	}
 	

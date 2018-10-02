@@ -47,7 +47,7 @@ public class MainWindow extends JFrame{
 	DeleteRowsAction deleteSelectedRowsAction = new DeleteRowsAction("Delete selected file(s)", null,null, null, KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
 	MoveRowsUpAction moveSelectionUpAction = new MoveRowsUpAction("Move file up", null, null, null, KeyStroke.getKeyStroke(KeyEvent.VK_UP, ActionEvent.ALT_MASK));
 	MoveRowsDownAction moveSelectionDownAction = new MoveRowsDownAction("Move file down", null, null, null, KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, ActionEvent.ALT_MASK));
-	DuplicateRowsAction duplicateSelectionAction = new DuplicateRowsAction("Delete selected rows", null, null, null, KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.CTRL_MASK));
+	DuplicateRowsAction duplicateSelectionAction = new DuplicateRowsAction("Duplicate file(s)", null, null, null, KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.CTRL_MASK));
 	UndoDeletionAction undoDeletionAction = new UndoDeletionAction("Undo deletion", null, null, null, KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
 
 	public MainWindow(PdfWorkspace works) {
