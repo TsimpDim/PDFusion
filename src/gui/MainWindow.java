@@ -43,6 +43,7 @@ public class MainWindow extends JFrame{
 
 	JMenuItem openFiles;
 	JMenuItem mergeFiles;
+	JMenuItem watermarkFiles;
 
 	DeleteRowsAction deleteSelectedRowsAction = new DeleteRowsAction("Delete selected file(s)", null,null, null, KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
 	MoveRowsUpAction moveSelectionUpAction = new MoveRowsUpAction("Move file up", null, null, null, KeyStroke.getKeyStroke(KeyEvent.VK_UP, ActionEvent.ALT_MASK));
@@ -84,12 +85,15 @@ public class MainWindow extends JFrame{
 		mergeFiles = new JMenuItem("Merge files");
 		mergeFiles.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, ActionEvent.CTRL_MASK));
 
+		watermarkFiles = new JMenuItem("Watermark files");
+
 		fileChooser = new JFileChooser();
 		fileChooser.setMultiSelectionEnabled(true);
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("PDF Documents", "pdf");
 		fileChooser.setFileFilter(filter);
 
 		mergeFiles.addActionListener(buttonListener);
+		watermarkFiles.addActionListener(buttonListener);
 
 
 		// Table
@@ -127,6 +131,7 @@ public class MainWindow extends JFrame{
 		openMenu.add(openFiles);
 
 		editMenu.add(mergeFiles);
+		editMenu.add(watermarkFiles);
 
 		selectionMenu.add(deleteSelectedRowsAction);
 		selectionMenu.add(moveSelectionUpAction);
@@ -200,6 +205,9 @@ public class MainWindow extends JFrame{
 					ResultsWindow progBar = new ResultsWindow(PdfWorkspace.totalFilesToMerge, "Preparing files...", destination);
 					workspace.mergeFiles(destination, progBar);
 				}
+			} else if (arg0.getSource().equals(watermarkFiles)){ // Watermark files
+
+				WatermarkWindow wtrmkWindow = new WatermarkWindow();
 			}
 		}
 	}
