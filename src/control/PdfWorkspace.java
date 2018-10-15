@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import javax.swing.JOptionPane;
+import javax.swing.text.StyleConstants;
 
 import com.itextpdf.io.font.FontConstants;
 import com.itextpdf.io.font.FontProgramFactory;
@@ -17,6 +18,7 @@ import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.geom.Rectangle;
 import com.itextpdf.kernel.pdf.*;
 import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
+import com.itextpdf.kernel.pdf.canvas.parser.listener.TextChunk;
 import com.itextpdf.kernel.pdf.extgstate.PdfExtGState;
 import com.itextpdf.kernel.utils.PdfMerger;
 
@@ -350,32 +352,44 @@ class AsyncStamper extends Thread{
 			Rectangle pageSize;
 			float x,y;
 
-			for(Integer pageIdx : curFile.getPages()) { // Watermark only selected page range
-				PdfPage page = pdfDoc.getPage(pageIdx);
-				pageSize = page.getPageSizeWithRotation();
-				page.setIgnorePageRotationForContent(true);
+			// Watermark positions
+            Integer wtrmkPos = options.getWtrmkPos();
 
-				// Set watermark position
-				Integer wtrmkPos = options.getWtrmkPos();
+            PdfFont pageFont;
+            try {
+                pageFont = PdfFontFactory.createFont(FontConstants.HELVETICA);
+            }catch(java.io.IOException e){
+                return;
+            }
+
+            Float x_offset = pageFont.getWidth(options.getWtrmkText(), 24)/2;
+            Integer y_offset = pageFont.getAscent(options.getWtrmkText(), 24); // Replace fontSize with WatermarkOptions property
+
+            for(Integer pageIdx : curFile.getPages()) { // Watermark only selected page range
+                PdfPage page = pdfDoc.getPage(pageIdx);
+                pageSize = page.getPageSizeWithRotation();
+                page.setIgnorePageRotationForContent(true);
+
+                // Set watermark position
 				if(wtrmkPos == 0) { // Top Left
-					x = pageSize.getLeft();
-					y = pageSize.getTop();
+					x = pageSize.getLeft() + x_offset;
+					y = pageSize.getTop() - y_offset;
 				}else if(wtrmkPos == 1){ // Top Right
-					x = pageSize.getRight();
-					y = pageSize.getTop();
+					x = pageSize.getRight() - x_offset;
+					y = pageSize.getTop() - y_offset;
 				}else if(wtrmkPos == 2){ // Top Center
 					x = (pageSize.getLeft() + pageSize.getRight()) / 2;
-					y = pageSize.getTop();
+					y = pageSize.getTop() - y_offset;
 				}else if(wtrmkPos == 3){ // Bottom Left
-					x = pageSize.getLeft();
-					y = pageSize.getBottom();
+					x = pageSize.getLeft() + x_offset;
+					y = pageSize.getBottom() + y_offset;
 				}else if(wtrmkPos == 4){ // Bottom Right
-					x = pageSize.getRight();
-					y = pageSize.getBottom();
+					x = pageSize.getRight() - x_offset;
+					y = pageSize.getBottom() + y_offset;
 				}else if(wtrmkPos == 5){ // Bottom Center
 					x = (pageSize.getLeft() + pageSize.getRight()) / 2;
-					y = pageSize.getBottom();
-				}else{					 // Center
+					y = pageSize.getBottom() + y_offset;
+				}else{ // Center
 					x = (pageSize.getLeft() + pageSize.getRight()) / 2;
 					y = (pageSize.getTop() + pageSize.getBottom()) / 2;
 				}
