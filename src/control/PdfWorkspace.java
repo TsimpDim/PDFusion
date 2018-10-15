@@ -1,6 +1,8 @@
 package control;
+import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,12 +10,23 @@ import java.util.Collections;
 
 import javax.swing.JOptionPane;
 
-import com.itextpdf.kernel.pdf.PdfDocument;
-import com.itextpdf.kernel.pdf.PdfReader;
-import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.io.font.FontConstants;
+import com.itextpdf.io.font.FontProgramFactory;
+import com.itextpdf.kernel.font.PdfFont;
+import com.itextpdf.kernel.font.PdfFontFactory;
+import com.itextpdf.kernel.geom.Rectangle;
+import com.itextpdf.kernel.pdf.*;
+import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
+import com.itextpdf.kernel.pdf.extgstate.PdfExtGState;
 import com.itextpdf.kernel.utils.PdfMerger;
 
+import com.itextpdf.layout.Canvas;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.property.TextAlignment;
+import com.itextpdf.layout.property.VerticalAlignment;
 import gui.ResultsWindow;
+import gui.WtrmkResultsWindow;
 
 public class PdfWorkspace{
 
@@ -167,10 +180,6 @@ public class PdfWorkspace{
 		
 	}
 
-	public void addRemovedFile(PdfFile file){
-		removedFiles.add(file);
-	}
-
 	public void undoPreviousDeletion(){
 
 		for(PdfFile file : removedFiles) {
@@ -199,6 +208,15 @@ public class PdfWorkspace{
 	
 	public PdfFile getFile(int index) {
 		return allFiles.get(index);
+	}
+
+	public int watermarkFiles(WatermarkOptions wtrmkOptions){
+		WtrmkResultsWindow resWindow = new WtrmkResultsWindow((wtrmkOptions.getWtrmkAllFiles() ? allFiles.size() : wtrmkOptions.getSelectedFiles().length), "Gathering files");
+
+		AsyncStamper watermarker = new AsyncStamper(resWindow, this.allFiles, wtrmkOptions);
+		watermarker.run();
+
+		return 0;
 	}
 }
 
@@ -278,5 +296,109 @@ class AsyncMerger extends Thread {
 		}
 		
 		progBar.changeLabel("Done");
+	}
+}
+
+
+class AsyncStamper extends Thread{
+
+	private WtrmkResultsWindow resWindow;
+	private ArrayList<PdfFile> allFiles;
+	private WatermarkOptions options;
+
+
+	public AsyncStamper(WtrmkResultsWindow resWindow, ArrayList<PdfFile> allFiles, WatermarkOptions options){
+	    this.allFiles = allFiles;
+		this.resWindow = resWindow;
+		this.options = options;
+	}
+
+	@Override
+	public void run(){
+		// Set which files are to be watermarked
+		ArrayList<PdfFile> filesToWtrmk = new ArrayList<>(allFiles);
+		if(!options.getWtrmkAllFiles()) {
+			filesToWtrmk.clear();
+			for (int index : options.getSelectedFiles())
+				filesToWtrmk.add(allFiles.get(index));
+		}
+
+		// Start watermarking
+		resWindow.changeLabel("Watermarking files");
+		for (PdfFile curFile : filesToWtrmk){
+			String dest = curFile.getPath().replace(".pdf", ".bak");
+			PdfDocument pdfDoc;
+
+			try {
+				pdfDoc = new PdfDocument(new PdfReader(curFile.getPath()), new PdfWriter(dest));
+			}catch(java.io.IOException e){
+				JOptionPane.showMessageDialog(null, "Some files could not be read", "Warning", JOptionPane.WARNING_MESSAGE);
+				return;
+			}
+
+			Document doc = new Document(pdfDoc);
+
+
+			// Watermark Text
+			Paragraph p = new Paragraph(options.getWtrmkText());
+			PdfCanvas over;
+
+			// Opacity
+			PdfExtGState gs1 = new PdfExtGState().setFillOpacity(options.getWtrmkOpac());
+
+			// Page Size
+			Rectangle pageSize;
+			float x,y;
+
+			for(Integer pageIdx : curFile.getPages()) { // Watermark only selected page range
+				PdfPage page = pdfDoc.getPage(pageIdx);
+				pageSize = page.getPageSizeWithRotation();
+				page.setIgnorePageRotationForContent(true);
+
+				// Set watermark position
+				Integer wtrmkPos = options.getWtrmkPos();
+				if(wtrmkPos == 0) { // Top Left
+					x = pageSize.getLeft();
+					y = pageSize.getTop();
+				}else if(wtrmkPos == 1){ // Top Right
+					x = pageSize.getRight();
+					y = pageSize.getTop();
+				}else if(wtrmkPos == 2){ // Top Center
+					x = (pageSize.getLeft() + pageSize.getRight()) / 2;
+					y = pageSize.getTop();
+				}else if(wtrmkPos == 3){ // Bottom Left
+					x = pageSize.getLeft();
+					y = pageSize.getBottom();
+				}else if(wtrmkPos == 4){ // Bottom Right
+					x = pageSize.getRight();
+					y = pageSize.getBottom();
+				}else if(wtrmkPos == 5){ // Bottom Center
+					x = (pageSize.getLeft() + pageSize.getRight()) / 2;
+					y = pageSize.getBottom();
+				}else{					 // Center
+					x = (pageSize.getLeft() + pageSize.getRight()) / 2;
+					y = (pageSize.getTop() + pageSize.getBottom()) / 2;
+				}
+
+				over = new PdfCanvas(page);
+				over.saveState();
+				over.setExtGState(gs1);
+				doc.showTextAligned(p, x, y, pageIdx, TextAlignment.CENTER, VerticalAlignment.MIDDLE, (float)Math.toRadians(options.getWtrmkRot()));
+			}
+
+			doc.close();
+
+			// Replace .pdf with .bak
+			File fileWithoutWtrmk = new File(curFile.getPath());
+			File fileWithWtrmk = new File(curFile.getPath().replace(".pdf", ".bak"));
+
+			// Delete the file we want to overwrite
+			fileWithoutWtrmk.delete();
+			fileWithWtrmk.renameTo(new File(curFile.getPath().replace(".bak", ".pdf"))); // Rename .bak to .pdf
+
+			resWindow.incrementValue();
+		}
+
+		resWindow.changeLabel("Watermarking completed");
 	}
 }

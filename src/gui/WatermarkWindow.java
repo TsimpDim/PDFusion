@@ -1,10 +1,16 @@
 package gui;
 
+import control.PdfWorkspace;
+import control.WatermarkOptions;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 public class WatermarkWindow extends JFrame {
 
@@ -20,12 +26,12 @@ public class WatermarkWindow extends JFrame {
     private SpinnerModel wtrmkRotationSpinnerModel;
     private JLabel wtrmkOpacityLabel;
     private JSlider wtrmkOpacitySlider;
-    private JRadioButton wtrmkSelectedFiles;
-    private JRadioButton wtrmkAllFiles;
+    private JRadioButton wtrmkSelectedFilesRadioBut;
+    private JRadioButton wtrmkAllFilesRadioBut;
     private ButtonGroup wtrmkFileChoiceButtonGroup;
     private JButton watermarkButton;
 
-    public WatermarkWindow(){
+    public WatermarkWindow(PdfWorkspace workspace, int[] selectedRows){
 
         container = new JPanel();
         insetSubContainer = new JPanel();
@@ -58,16 +64,34 @@ public class WatermarkWindow extends JFrame {
         wtrmkOpacitySlider.setMaximumSize(new Dimension(250, 40));
         wtrmkOpacitySlider.setAlignmentX(LEFT_ALIGNMENT);
 
-        wtrmkSelectedFiles = new JRadioButton("Watermark selected files");
-        wtrmkAllFiles = new JRadioButton("Watermark all files");
+        wtrmkSelectedFilesRadioBut = new JRadioButton("Watermark selected files");
+        wtrmkAllFilesRadioBut = new JRadioButton("Watermark all files");
         wtrmkFileChoiceButtonGroup = new ButtonGroup();
-        wtrmkFileChoiceButtonGroup.add(wtrmkSelectedFiles);
-        wtrmkFileChoiceButtonGroup.add(wtrmkAllFiles);
-        wtrmkSelectedFiles.setSelected(true);
+        wtrmkFileChoiceButtonGroup.add(wtrmkSelectedFilesRadioBut);
+        wtrmkFileChoiceButtonGroup.add(wtrmkAllFilesRadioBut);
+        wtrmkSelectedFilesRadioBut.setSelected(true);
 
         watermarkButton = new JButton("Watermark");
         watermarkButton.setMaximumSize(new Dimension(500, 100));
         watermarkButton.setFont(new Font("Arial", Font.PLAIN, 25));
+        watermarkButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String wtrmkText = wtrmkTextField.getText();
+                Integer wtrmkPos = wtrmkPositionDropdown.getSelectedIndex();
+                Integer wtrmkRot = (Integer) wtrmkRotationSpinner.getValue();
+                Integer wtrmkOpac = wtrmkOpacitySlider.getValue();
+                Boolean wtrmkAllFiles = false;
+
+                if(wtrmkAllFilesRadioBut.isSelected())
+                    wtrmkAllFiles = true;
+
+                // !!! Despite wtrmkOpac being an Integer it is saved as a float for easier use !!!
+                // Division by 100 is done to convert Opacity to a range from 0-0.1 instead of 0-100 (i.e a percentage)
+                WatermarkOptions wtrmkOptions = new WatermarkOptions(selectedRows, wtrmkText, wtrmkPos, wtrmkRot, (float)wtrmkOpac/100, wtrmkAllFiles);
+                workspace.watermarkFiles(wtrmkOptions);
+            }
+        });
 
         insetSubContainer.add(Box.createVerticalStrut(20));
         insetSubContainer.add(wtrmkTextLabel);
@@ -82,8 +106,8 @@ public class WatermarkWindow extends JFrame {
         insetSubContainer.add(wtrmkOpacityLabel);
         insetSubContainer.add(wtrmkOpacitySlider);
         insetSubContainer.add(Box.createVerticalStrut(50));
-        insetSubContainer.add(wtrmkSelectedFiles);
-        insetSubContainer.add(wtrmkAllFiles);
+        insetSubContainer.add(wtrmkSelectedFilesRadioBut);
+        insetSubContainer.add(wtrmkAllFilesRadioBut);
         insetSubContainer.add(Box.createVerticalStrut(50));
 
         insetSubContainer.setLayout(new BoxLayout(insetSubContainer, BoxLayout.Y_AXIS));

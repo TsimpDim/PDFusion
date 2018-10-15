@@ -207,7 +207,7 @@ public class MainWindow extends JFrame{
 				}
 			} else if (arg0.getSource().equals(watermarkFiles)){ // Watermark files
 
-				WatermarkWindow wtrmkWindow = new WatermarkWindow();
+				WatermarkWindow wtrmkWindow = new WatermarkWindow(workspace, fileTable.getSelectedRows());
 			}
 		}
 	}
