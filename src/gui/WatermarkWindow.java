@@ -78,6 +78,12 @@ public class WatermarkWindow extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String wtrmkText = wtrmkTextField.getText();
+
+                if(wtrmkText.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Watermark text cannot be empty.", "Warning", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+
                 Integer wtrmkPos = wtrmkPositionDropdown.getSelectedIndex();
                 Integer wtrmkRot = (Integer) wtrmkRotationSpinner.getValue();
                 Integer wtrmkOpac = wtrmkOpacitySlider.getValue();
@@ -86,10 +92,18 @@ public class WatermarkWindow extends JFrame {
                 if(wtrmkAllFilesRadioBut.isSelected())
                     wtrmkAllFiles = true;
 
+                if(!wtrmkAllFiles && selectedRows.length == 0){ // Wtrmk selected files but no files are selected
+                    JOptionPane.showMessageDialog(null, "No files/rows are selected.", "Warning", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+
                 // !!! Despite wtrmkOpac being an Integer it is saved as a float for easier use !!!
                 // Division by 100 is done to convert Opacity to a range from 0-0.1 instead of 0-100 (i.e a percentage)
                 WatermarkOptions wtrmkOptions = new WatermarkOptions(selectedRows, wtrmkText, wtrmkPos, wtrmkRot, (float)wtrmkOpac/100, wtrmkAllFiles);
                 workspace.watermarkFiles(wtrmkOptions);
+
+                setVisible(false);
+                dispose();
             }
         });
 
