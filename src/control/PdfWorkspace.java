@@ -1,28 +1,22 @@
 package control;
-import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
 import javax.swing.JOptionPane;
-import javax.swing.text.StyleConstants;
 
 import com.itextpdf.io.font.FontConstants;
-import com.itextpdf.io.font.FontProgramFactory;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.geom.Rectangle;
 import com.itextpdf.kernel.pdf.*;
 import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
-import com.itextpdf.kernel.pdf.canvas.parser.listener.TextChunk;
 import com.itextpdf.kernel.pdf.extgstate.PdfExtGState;
 import com.itextpdf.kernel.utils.PdfMerger;
 
-import com.itextpdf.layout.Canvas;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.property.TextAlignment;
@@ -33,7 +27,7 @@ import gui.WtrmkResultsWindow;
 public class PdfWorkspace{
 
 	public static int totalFiles = 0;
-	public static int totalFilesToMerge = 0;
+	public static int totalFilesToInclude = 0;
 	private ArrayList<PdfFile> allFiles = new ArrayList<PdfFile>();
 	private ArrayList<PdfFile> removedFiles = new ArrayList<>();
 	
@@ -49,7 +43,7 @@ public class PdfWorkspace{
 		boolean targetFileExists = false;
 		
 		// Check if the conditions of the Workspace allow for files to be merged
-		if(totalFilesToMerge <= 0 || totalFiles <= 0) {
+		if(totalFilesToInclude <= 0 || totalFiles <= 0) {
 			JOptionPane.showMessageDialog(null, "No files to merge found.", "Warning", JOptionPane.WARNING_MESSAGE);
 			return -1;
 		}
@@ -102,7 +96,7 @@ public class PdfWorkspace{
 	public void addFileToWorkspace(PdfFile p) {
 		allFiles.add(p);
 		totalFiles++;
-		totalFilesToMerge++;
+		totalFilesToInclude++;
 	}
 	
 	/**
@@ -129,7 +123,7 @@ public class PdfWorkspace{
 			allFiles.remove(allFiles.get(row));
 			
 			totalFiles--;
-			totalFilesToMerge--;
+			totalFilesToInclude--;
 		}
 
 		return true;
@@ -188,7 +182,7 @@ public class PdfWorkspace{
 			this.addFileToWorkspace(file);
 
 			totalFiles--;
-			totalFilesToMerge--;
+			totalFilesToInclude--;
 		}
 
 		removedFiles.clear();
@@ -199,7 +193,7 @@ public class PdfWorkspace{
 		String finalString = "----- WORKSPACE\n";
 		
 		for(PdfFile f : allFiles)
-			finalString += f.getPath() + ',' + String.valueOf(f.getFileId()) + ',' + String.valueOf(f.getToMerge()) + '\n';
+			finalString += f.getPath() + ',' + String.valueOf(f.getFileId()) + ',' + String.valueOf(f.getToInclude()) + '\n';
 		
 		return finalString;
 	}
@@ -213,8 +207,30 @@ public class PdfWorkspace{
 	}
 
 	public int watermarkFiles(WatermarkOptions wtrmkOptions){
-		WtrmkResultsWindow resWindow = new WtrmkResultsWindow((wtrmkOptions.getWtrmkAllFiles() ? allFiles.size() : wtrmkOptions.getSelectedFiles().length), "Gathering files");
 
+		// Check in case user wants to watermark selected files
+		// But none of the selected is set to be included
+		if(!wtrmkOptions.getWtrmkAllFiles()){
+			int filesNotToInclude = 0;
+
+			for(int index : wtrmkOptions.getSelectedFiles()){
+				if(!getFile(index).getToInclude())
+					filesNotToInclude++;
+			}
+
+			if(filesNotToInclude == wtrmkOptions.getSelectedFiles().length){
+				JOptionPane.showMessageDialog(null, "None of your files are set to be included", "Warning", JOptionPane.WARNING_MESSAGE);
+				return -1;
+			}
+		}else{ // If user wants to watermark all files but again, none are set to be included
+			if(totalFilesToInclude == 0){
+				JOptionPane.showMessageDialog(null, "None of your files are set to be included", "Warning", JOptionPane.WARNING_MESSAGE);
+				return -1;
+			}
+		}
+
+		
+		WtrmkResultsWindow resWindow = new WtrmkResultsWindow((wtrmkOptions.getWtrmkAllFiles() ? totalFilesToInclude : wtrmkOptions.getSelectedFiles().length), "Gathering files");
 		AsyncStamper watermarker = new AsyncStamper(resWindow, this.allFiles, wtrmkOptions);
 		watermarker.run();
 
@@ -268,7 +284,7 @@ class AsyncMerger extends Thread {
 		// Parse every file in the workspace and add it to the new file
 		for(PdfFile file : allFiles) {
 			
-			if(file.getToMerge()) {
+			if(file.getToInclude()) {
 				PdfDocument sourcePdf = null;
 				try {
 					sourcePdf = new PdfDocument(new PdfReader(file.getPath()));
@@ -328,6 +344,10 @@ class AsyncStamper extends Thread{
 		// Start watermarking
 		resWindow.changeLabel("Watermarking files");
 		for (PdfFile curFile : filesToWtrmk){
+
+			if(!curFile.getToInclude())
+				continue;
+
 			String dest = curFile.getPath().replace(".pdf", ".bak");
 			PdfDocument pdfDoc;
 

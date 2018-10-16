@@ -47,7 +47,7 @@ public class PdfFileTableModel extends AbstractTableModel{
 		case 2:
 			return req_file.getPagesString();
 		case 3:
-			return req_file.getToMerge();
+			return req_file.getToInclude();
 		default:
 			return null;
 		
@@ -73,13 +73,13 @@ public class PdfFileTableModel extends AbstractTableModel{
 	public void setValueAt(Object value, int row, int col) {
 
 	    if (col == BOOLEAN_COLUMN) {
-            files.get(row).setToMerge((Boolean) value);
+            files.get(row).setToInclude((Boolean) value);
             this.fireTableCellUpdated(row, col);
             
             if((Boolean) value == false)
-            	PdfWorkspace.totalFilesToMerge--;
+            	PdfWorkspace.totalFilesToInclude--;
             else
-            	PdfWorkspace.totalFilesToMerge++;
+            	PdfWorkspace.totalFilesToInclude++;
             
 	    }else if(col == PAGES_COLUMN) {
 	    	

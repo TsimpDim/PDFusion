@@ -186,7 +186,7 @@ extends java.io.File</pre>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>private java.lang.Boolean</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../control/PdfFile.html#toMerge">toMerge</a></span></code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../control/PdfFile.html#toInclude">toInclude</a></span></code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 </table>
@@ -219,7 +219,7 @@ extends java.io.File</pre>
 </tr>
 <tr class="rowColor">
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="../control/PdfFile.html#PdfFile-java.lang.String-java.lang.Boolean-int-">PdfFile</a></span>&#8203;(java.lang.String&nbsp;path,
-       java.lang.Boolean&nbsp;toMerge,
+       java.lang.Boolean&nbsp;toInclude,
        int&nbsp;fileId)</code></th>
 <td class="colLast">
 <div class="block">Initializes a new <a href="../control/PdfFile.html" title="class in control"><code>PdfFile</code></a> without page restrictions</div>
@@ -228,7 +228,7 @@ extends java.io.File</pre>
 <tr class="altColor">
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="../control/PdfFile.html#PdfFile-java.lang.String-java.lang.String-java.lang.Boolean-int-">PdfFile</a></span>&#8203;(java.lang.String&nbsp;path,
        java.lang.String&nbsp;pages,
-       java.lang.Boolean&nbsp;toMerge,
+       java.lang.Boolean&nbsp;toInclude,
        int&nbsp;fileId)</code></th>
 <td class="colLast">
 <div class="block">Initializes a new <a href="../control/PdfFile.html" title="class in control"><code>PdfFile</code></a> with a string pages parameter</div>
@@ -237,7 +237,7 @@ extends java.io.File</pre>
 <tr class="rowColor">
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="../control/PdfFile.html#PdfFile-java.lang.String-java.util.ArrayList-java.lang.Boolean-int-">PdfFile</a></span>&#8203;(java.lang.String&nbsp;path,
        java.util.ArrayList&lt;java.lang.Integer&gt;&nbsp;pages,
-       java.lang.Boolean&nbsp;toMerge,
+       java.lang.Boolean&nbsp;toInclude,
        int&nbsp;fileId)</code></th>
 <td class="colLast">
 <div class="block">Initializes a new <a href="../control/PdfFile.html" title="class in control"><code>PdfFile</code></a> with page restrictions</div>
@@ -321,7 +321,7 @@ extends java.io.File</pre>
 </tr>
 <tr id="i10" class="altColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../control/PdfFile.html#setToMerge-java.lang.Boolean-">setToMerge</a></span>&#8203;(java.lang.Boolean&nbsp;toMerge)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../control/PdfFile.html#setToMerge-java.lang.Boolean-">setToMerge</a></span>&#8203;(java.lang.Boolean&nbsp;toInclude)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr id="i11" class="rowColor">
@@ -389,13 +389,13 @@ extends java.io.File</pre>
 <pre>private&nbsp;java.util.ArrayList&lt;java.lang.Integer&gt; pages</pre>
 </li>
 </ul>
-<a name="toMerge">
+<a name="toInclude">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>toMerge</h4>
-<pre>private&nbsp;java.lang.Boolean toMerge</pre>
+<h4>toInclude</h4>
+<pre>private&nbsp;java.lang.Boolean toInclude</pre>
 </li>
 </ul>
 <a name="fileId">
@@ -423,14 +423,14 @@ extends java.io.File</pre>
 <h4>PdfFile</h4>
 <pre>public&nbsp;PdfFile&#8203;(java.lang.String&nbsp;path,
                java.util.ArrayList&lt;java.lang.Integer&gt;&nbsp;pages,
-               java.lang.Boolean&nbsp;toMerge,
+               java.lang.Boolean&nbsp;toInclude,
                int&nbsp;fileId)</pre>
 <div class="block">Initializes a new <a href="../control/PdfFile.html" title="class in control"><code>PdfFile</code></a> with page restrictions</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>path</code> - The file path</dd>
 <dd><code>pages</code> - An <code>ArrayList</code> with all the pages to use. Set null for full pages.</dd>
-<dd><code>toMerge</code> - Whether or not this file should be merged</dd>
+<dd><code>toInclude</code> - Whether or not this file should be merged</dd>
 <dd><code>fileId</code> - File specific id</dd>
 </dl>
 </li>
@@ -442,13 +442,13 @@ extends java.io.File</pre>
 <li class="blockList">
 <h4>PdfFile</h4>
 <pre>public&nbsp;PdfFile&#8203;(java.lang.String&nbsp;path,
-               java.lang.Boolean&nbsp;toMerge,
+               java.lang.Boolean&nbsp;toInclude,
                int&nbsp;fileId)</pre>
 <div class="block">Initializes a new <a href="../control/PdfFile.html" title="class in control"><code>PdfFile</code></a> without page restrictions</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>path</code> - The file path</dd>
-<dd><code>toMerge</code> - Whether or not this file should be merged</dd>
+<dd><code>toInclude</code> - Whether or not this file should be merged</dd>
 <dd><code>fileId</code> - File specific id</dd>
 </dl>
 </li>
@@ -461,14 +461,14 @@ extends java.io.File</pre>
 <h4>PdfFile</h4>
 <pre>public&nbsp;PdfFile&#8203;(java.lang.String&nbsp;path,
                java.lang.String&nbsp;pages,
-               java.lang.Boolean&nbsp;toMerge,
+               java.lang.Boolean&nbsp;toInclude,
                int&nbsp;fileId)</pre>
 <div class="block">Initializes a new <a href="../control/PdfFile.html" title="class in control"><code>PdfFile</code></a> with a string pages parameter</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>path</code> - The file path</dd>
 <dd><code>pages</code> - A <code>String</code> containing the pages to include</dd>
-<dd><code>toMerge</code> - Whether or not this file should be merged</dd>
+<dd><code>toInclude</code> - Whether or not this file should be merged</dd>
 <dd><code>fileId</code> - File specific id</dd>
 </dl>
 </li>
@@ -593,7 +593,7 @@ extends java.io.File</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>setToMerge</h4>
-<pre>public&nbsp;void&nbsp;setToMerge&#8203;(java.lang.Boolean&nbsp;toMerge)</pre>
+<pre>public&nbsp;void&nbsp;setToMerge&#8203;(java.lang.Boolean&nbsp;toInclude)</pre>
 </li>
 </ul>
 <a name="getFileId--">

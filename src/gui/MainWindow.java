@@ -5,16 +5,10 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.io.File;
-import java.security.Key;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 
-import javax.print.DocFlavor;
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import control.PdfFile;
@@ -202,7 +196,7 @@ public class MainWindow extends JFrame{
 
 
 					// Initialize progress bar
-					ResultsWindow progBar = new ResultsWindow(PdfWorkspace.totalFilesToMerge, "Preparing files...", destination);
+					ResultsWindow progBar = new ResultsWindow(PdfWorkspace.totalFilesToInclude, "Preparing files...", destination);
 					workspace.mergeFiles(destination, progBar);
 				}
 			} else if (arg0.getSource().equals(watermarkFiles)){ // Watermark files

@@ -8,7 +8,6 @@ import javax.swing.JOptionPane;
 
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfReader;
-import com.sun.deploy.util.StringUtils;
 
 public class PdfFile extends File{
 
@@ -20,35 +19,35 @@ public class PdfFile extends File{
 	private ArrayList<Integer> availablePages = null;
 	private Integer numberOfAvailablePages = -1;
 	private String pageInput = "All"; // User input in the 'pages' cell
-	private Boolean toMerge;
+	private Boolean toInclude;
 	private int fileId;
 	
 	/**
 	 * Initializes a new {@link PdfFile} with page restrictions
 	 * @param path The file path
 	 * @param pages An {@link ArrayList} with all the pages to use. Set null for full pages.
-	 * @param toMerge Whether or not this file should be merged
+	 * @param toInclude Whether or not this file should be merged
 	 * @param fileId File specific id
 	 */
-	public PdfFile(String path, ArrayList<Integer> pages, Boolean toMerge, int fileId) {
+	public PdfFile(String path, ArrayList<Integer> pages, Boolean toInclude, int fileId) {
 		super(path);
 		this.path = path;
 		this.pages = pages;
-		this.toMerge = toMerge;
+		this.toInclude = toInclude;
 		this.fileId = fileId;
 	}
 	
 	/**
 	 * Initializes a new {@link PdfFile} without page restrictions
 	 * @param path The file path
-	 * @param toMerge Whether or not this file should be merged
+	 * @param toInclude Whether or not this file should be merged
 	 * @param fileId File specific id
 	 */
-	public PdfFile(String path, Boolean toMerge, int fileId) {
+	public PdfFile(String path, Boolean toInclude, int fileId) {
 		super(path);
 		this.path = path;
 		this.pages = null;
-		this.toMerge = toMerge;
+		this.toInclude = toInclude;
 		this.fileId = fileId;
 	}
 	
@@ -56,14 +55,14 @@ public class PdfFile extends File{
 	 * Initializes a new {@link PdfFile} with a string pages parameter
 	 * @param path The file path
 	 * @param pages A {@link String} containing the pages to include
-	 * @param toMerge Whether or not this file should be merged
+	 * @param toInclude Whether or not this file should be merged
 	 * @param fileId File specific id
 	 */
-	public PdfFile(String path, String pages, Boolean toMerge, int fileId) {
+	public PdfFile(String path, String pages, Boolean toInclude, int fileId) {
 		super(path);
 		this.path = path;
 		this.setPages(pages);
-		this.toMerge = toMerge;
+		this.toInclude = toInclude;
 		this.fileId = fileId;
 	}
 
@@ -75,7 +74,7 @@ public class PdfFile extends File{
 		super(master.path);
 		this.path = master.path;
 		this.pages = master.pages;
-		this.toMerge = master.toMerge;
+		this.toInclude = master.toInclude;
 		this.fileId = master.fileId;
 	}
 
@@ -281,12 +280,12 @@ public class PdfFile extends File{
 		return this.numberOfAvailablePages;
 	}
 
-	public Boolean getToMerge() {
-		return toMerge;
+	public Boolean getToInclude() {
+		return toInclude;
 	}
 
-	public void setToMerge(Boolean toMerge) {
-		this.toMerge = toMerge;
+	public void setToInclude(Boolean toInclude) {
+		this.toInclude = toInclude;
 	}
 
 	public int getFileId() {
