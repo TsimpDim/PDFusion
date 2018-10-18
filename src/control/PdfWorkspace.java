@@ -232,7 +232,7 @@ public class PdfWorkspace{
 		
 		WtrmkResultsWindow resWindow = new WtrmkResultsWindow((wtrmkOptions.getWtrmkAllFiles() ? totalFilesToInclude : wtrmkOptions.getSelectedFiles().length), "Gathering files");
 		AsyncStamper watermarker = new AsyncStamper(resWindow, this.allFiles, wtrmkOptions);
-		watermarker.run();
+		watermarker.start();
 
 		return 0;
 	}
