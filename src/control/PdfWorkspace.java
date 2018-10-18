@@ -382,8 +382,11 @@ class AsyncStamper extends Thread{
                 return;
             }
 
-            Float x_offset = pageFont.getWidth(options.getWtrmkText(), 24)/2;
-            Integer y_offset = pageFont.getAscent(options.getWtrmkText(), 24); // Replace fontSize with WatermarkOptions property
+            p.setFont(pageFont);
+            p.setFontSize(options.getWtrmkFontSize());
+
+            Float x_offset = pageFont.getWidth(options.getWtrmkText(), options.getWtrmkFontSize())/2;
+            Integer y_offset = pageFont.getAscent(options.getWtrmkText(), options.getWtrmkFontSize()); // Replace fontSize with WatermarkOptions property
 
             for(Integer pageIdx : curFile.getPages()) { // Watermark only selected page range
                 PdfPage page = pdfDoc.getPage(pageIdx);
@@ -416,6 +419,7 @@ class AsyncStamper extends Thread{
 
 				over = new PdfCanvas(page);
 				over.saveState();
+				over.setFontAndSize(pageFont, options.getWtrmkFontSize());
 				over.setExtGState(gs1);
 				doc.showTextAligned(p, x, y, pageIdx, TextAlignment.CENTER, VerticalAlignment.MIDDLE, (float)Math.toRadians(options.getWtrmkRot()));
 			}

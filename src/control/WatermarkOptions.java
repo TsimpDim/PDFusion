@@ -7,14 +7,16 @@ public class WatermarkOptions {
     private Integer wtrmkPos;
     private Integer wtrmkRot;
     private Float wtrmkOpac;
+    private Integer wtrmkFontSize;
     private Boolean wtrmkAllFiles;
 
-    public WatermarkOptions(int[] selectedFiles, String wtrmkText, Integer wtrmkPos, Integer wtrmkRot, Float wtrmkOpac, Boolean wtrmkAllFiles) {
+    public WatermarkOptions(int[] selectedFiles, String wtrmkText, Integer wtrmkPos, Integer wtrmkRot, Float wtrmkOpac, Integer wtrmkFontSize, Boolean wtrmkAllFiles) {
         this.selectedFiles = selectedFiles;
         this.wtrmkText = wtrmkText;
         this.wtrmkPos = wtrmkPos;
         this.wtrmkRot = wtrmkRot;
         this.wtrmkOpac = wtrmkOpac;
+        this.wtrmkFontSize = wtrmkFontSize;
         this.wtrmkAllFiles = wtrmkAllFiles;
     }
 
@@ -22,47 +24,27 @@ public class WatermarkOptions {
         return selectedFiles;
     }
 
-    public void setSelectedFiles(int[] selectedFiles) {
-        this.selectedFiles = selectedFiles;
-    }
-
     public String getWtrmkText() {
         return wtrmkText;
-    }
-
-    public void setWtrmkText(String wtrmkText) {
-        this.wtrmkText = wtrmkText;
     }
 
     public Integer getWtrmkPos() {
         return wtrmkPos;
     }
 
-    public void setWtrmkPos(Integer wtrmkPos) {
-        this.wtrmkPos = wtrmkPos;
-    }
-
     public Integer getWtrmkRot() {
         return wtrmkRot;
-    }
-
-    public void setWtrmkRot(Integer wtrmkRot) {
-        this.wtrmkRot = wtrmkRot;
     }
 
     public Float getWtrmkOpac() {
         return wtrmkOpac;
     }
 
-    public void setWtrmkOpac(Float wtrmkOpac) {
-        this.wtrmkOpac = wtrmkOpac;
+    public Integer getWtrmkFontSize() {
+        return wtrmkFontSize;
     }
 
     public Boolean getWtrmkAllFiles() {
         return wtrmkAllFiles;
-    }
-
-    public void setWtrmkAllFiles(Boolean wtrmkAllFiles) {
-        this.wtrmkAllFiles = wtrmkAllFiles;
     }
 }

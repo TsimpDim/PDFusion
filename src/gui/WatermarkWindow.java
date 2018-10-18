@@ -26,15 +26,23 @@ public class WatermarkWindow extends JFrame {
     private SpinnerModel wtrmkRotationSpinnerModel;
     private JLabel wtrmkOpacityLabel;
     private JSlider wtrmkOpacitySlider;
+    private SpinnerModel wtrmkFontSizeSpinnerModel;
+    private JLabel wtrmkFontSizeLabel;
+    private JSpinner wtrmkFontSizeSpinner;
     private JRadioButton wtrmkSelectedFilesRadioBut;
     private JRadioButton wtrmkAllFilesRadioBut;
     private ButtonGroup wtrmkFileChoiceButtonGroup;
     private JButton watermarkButton;
+    private JButton cancelButton;
+    private JPanel controlButtonsPanel;
 
     public WatermarkWindow(PdfWorkspace workspace, int[] selectedRows){
 
         container = new JPanel();
         insetSubContainer = new JPanel();
+        controlButtonsPanel = new JPanel();
+        controlButtonsPanel.setLayout(new FlowLayout());
+        controlButtonsPanel.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
 
         wtrmkTextLabel = new JLabel("Watermark text:");
         wtrmkTextLabel.setAlignmentX(LEFT_ALIGNMENT);
@@ -64,6 +72,12 @@ public class WatermarkWindow extends JFrame {
         wtrmkOpacitySlider.setMaximumSize(new Dimension(250, 40));
         wtrmkOpacitySlider.setAlignmentX(LEFT_ALIGNMENT);
 
+        wtrmkFontSizeSpinnerModel = new SpinnerNumberModel(12, 0, 70, 1);
+        wtrmkFontSizeLabel = new JLabel("Font Size: ");
+        wtrmkFontSizeSpinner = new JSpinner(wtrmkFontSizeSpinnerModel);
+        wtrmkFontSizeSpinner.setMaximumSize(new Dimension(100, 300));
+        wtrmkFontSizeSpinner.setAlignmentX(LEFT_ALIGNMENT);
+
         wtrmkSelectedFilesRadioBut = new JRadioButton("Watermark selected files");
         wtrmkAllFilesRadioBut = new JRadioButton("Watermark all files");
         wtrmkFileChoiceButtonGroup = new ButtonGroup();
@@ -72,8 +86,9 @@ public class WatermarkWindow extends JFrame {
         wtrmkSelectedFilesRadioBut.setSelected(true);
 
         watermarkButton = new JButton("Watermark");
-        watermarkButton.setMaximumSize(new Dimension(500, 100));
-        watermarkButton.setFont(new Font("Arial", Font.PLAIN, 25));
+        watermarkButton.setMaximumSize(new Dimension(100, 50));
+        watermarkButton.setAlignmentX(RIGHT_ALIGNMENT);
+        watermarkButton.setFont(new Font("Arial", Font.PLAIN, 12));
         watermarkButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -87,6 +102,7 @@ public class WatermarkWindow extends JFrame {
                 Integer wtrmkPos = wtrmkPositionDropdown.getSelectedIndex();
                 Integer wtrmkRot = (Integer) wtrmkRotationSpinner.getValue();
                 Integer wtrmkOpac = wtrmkOpacitySlider.getValue();
+                Integer wtrmkFontSize = (Integer) wtrmkFontSizeSpinner.getValue();
                 Boolean wtrmkAllFiles = false;
 
                 if(wtrmkAllFilesRadioBut.isSelected())
@@ -99,13 +115,28 @@ public class WatermarkWindow extends JFrame {
 
                 // !!! Despite wtrmkOpac being an Integer it is saved as a float for easier use !!!
                 // Division by 100 is done to convert Opacity to a range from 0-0.1 instead of 0-100 (i.e a percentage)
-                WatermarkOptions wtrmkOptions = new WatermarkOptions(selectedRows, wtrmkText, wtrmkPos, wtrmkRot, (float)wtrmkOpac/100, wtrmkAllFiles);
+                WatermarkOptions wtrmkOptions = new WatermarkOptions(selectedRows, wtrmkText, wtrmkPos, wtrmkRot, (float)wtrmkOpac/100, wtrmkFontSize, wtrmkAllFiles);
                 workspace.watermarkFiles(wtrmkOptions);
 
                 setVisible(false);
                 dispose();
             }
         });
+
+        cancelButton = new JButton("Cancel");
+        cancelButton.setMaximumSize(new Dimension(100, 50));
+        cancelButton.setAlignmentX(RIGHT_ALIGNMENT);
+        cancelButton.setFont(new Font("Arial", Font.PLAIN, 12));
+        cancelButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+            }
+        });
+
+        controlButtonsPanel.add(cancelButton);
+        controlButtonsPanel.add(watermarkButton);
+        controlButtonsPanel.setAlignmentX(LEFT_ALIGNMENT);
 
         insetSubContainer.add(Box.createVerticalStrut(20));
         insetSubContainer.add(wtrmkTextLabel);
@@ -119,6 +150,9 @@ public class WatermarkWindow extends JFrame {
         insetSubContainer.add(Box.createVerticalStrut(10));
         insetSubContainer.add(wtrmkOpacityLabel);
         insetSubContainer.add(wtrmkOpacitySlider);
+        insetSubContainer.add(Box.createVerticalStrut(10));
+        insetSubContainer.add(wtrmkFontSizeLabel);
+        insetSubContainer.add(wtrmkFontSizeSpinner);
         insetSubContainer.add(Box.createVerticalStrut(50));
         insetSubContainer.add(wtrmkSelectedFilesRadioBut);
         insetSubContainer.add(wtrmkAllFilesRadioBut);
@@ -130,11 +164,11 @@ public class WatermarkWindow extends JFrame {
         container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
         container.add(insetSubContainer);
         container.add(Box.createHorizontalGlue());
-        container.add(watermarkButton);
+        container.add(controlButtonsPanel);
 
         this.setContentPane(container);
         this.setTitle("PDFusion Stamper");
-        this.setSize(400,500);
+        this.setSize(400,525);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setVisible(true);
         this.setResizable(false);
