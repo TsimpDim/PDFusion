@@ -1,7 +1,6 @@
 package gui;
 
-import java.awt.BorderLayout;
-import java.awt.Image;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -44,6 +43,7 @@ public class MainWindow extends JFrame{
 	MoveRowsDownAction moveSelectionDownAction = new MoveRowsDownAction("Move file down", null, null, null, KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, ActionEvent.ALT_MASK));
 	DuplicateRowsAction duplicateSelectionAction = new DuplicateRowsAction("Duplicate file(s)", null, null, null, KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.CTRL_MASK));
 	UndoDeletionAction undoDeletionAction = new UndoDeletionAction("Undo deletion", null, null, null, KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
+	OpenFileAction openFileAction = new OpenFileAction("Open selected file(s)", null, null);
 
 	public MainWindow(PdfWorkspace works) {
 
@@ -117,6 +117,8 @@ public class MainWindow extends JFrame{
 		tableMenu.add(moveSelectionDownAction);
 		tableMenu.add(duplicateSelectionAction);
 		tableMenu.add(undoDeletionAction);
+		tableMenu.add(new JSeparator());
+		tableMenu.add(openFileAction);
 
 		fileTable.setComponentPopupMenu(tableMenu);
 
@@ -333,6 +335,34 @@ public class MainWindow extends JFrame{
 		public void actionPerformed(ActionEvent e){
 			workspace.undoPreviousDeletion();
 			tableModel.fireTableDataChanged();
+		}
+	}
+
+	/**
+	 * Opens all the selected files
+	 */
+	class OpenFileAction extends AbstractAction {
+
+		public OpenFileAction(String text, ImageIcon icon, String desc) {
+			super(text, icon);
+			putValue(SHORT_DESCRIPTION, desc);
+		}
+
+		public void actionPerformed(ActionEvent e){
+
+			int selectedRow = fileTable.getSelectedRow();
+			if(selectedRow > -1) {
+				int[] selectedRows = fileTable.getSelectedRows();
+
+				for(int pageIdx : selectedRows){
+					try{
+						Desktop.getDesktop().open(new File(workspace.getFile(pageIdx).getPath()));
+					}catch(java.io.IOException ex){
+						JOptionPane.showMessageDialog(null, "Could not open file.", "Error!", JOptionPane.ERROR_MESSAGE);
+					}
+				}
+			}
+
 		}
 	}
 }
