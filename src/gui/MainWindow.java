@@ -357,7 +357,7 @@ public class MainWindow extends JFrame{
 				for(int pageIdx : selectedRows){
 					try{
 						Desktop.getDesktop().open(new File(workspace.getFile(pageIdx).getPath()));
-					}catch(java.io.IOException ex){
+					}catch(java.io.IOException | java.lang.IllegalArgumentException ex){
 						JOptionPane.showMessageDialog(null, "Could not open file.", "Error!", JOptionPane.ERROR_MESSAGE);
 					}
 				}
