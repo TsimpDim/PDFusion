@@ -65,6 +65,10 @@ public class WatermarkWindow extends JFrame {
 
         wtrmkOpacityLabel = new JLabel("Watermark Opacity:");
         wtrmkOpacitySlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 100);
+        wtrmkOpacitySlider.setMajorTickSpacing(10);
+        wtrmkOpacitySlider.setFont(new Font("Serif", Font.ITALIC, 12));
+        wtrmkOpacitySlider.setPaintLabels(true);
+        wtrmkOpacitySlider.setPaintTicks(true);
         wtrmkOpacitySlider.setMaximumSize(new Dimension(250, 40));
         wtrmkOpacitySlider.setAlignmentX(LEFT_ALIGNMENT);
 
