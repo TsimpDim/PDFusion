@@ -1,22 +1,12 @@
 package gui;
 
-import java.awt.BorderLayout;
-import java.awt.Desktop;
-import java.awt.Image;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
 
 public class ResultsWindow extends JFrame{
 
@@ -55,7 +45,7 @@ public class ResultsWindow extends JFrame{
 		openMergedFileCB = new JCheckBox("Open merged file");
 		openMergedFileCB.setFocusable(false);
 		openMergedFileCB.setEnabled(false);
-		
+
 		openMergedFileDirectoryCB = new JCheckBox("Open merged file directory");
 		openMergedFileDirectoryCB.setFocusable(false);
 		openMergedFileDirectoryCB.setEnabled(false);

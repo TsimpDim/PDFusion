@@ -1,5 +1,8 @@
 package control;
 
+/**
+ * This class contains all the available options/settings for the watermarking function through {@link PdfWorkspace}
+ */
 public class WatermarkOptions {
 
     private int[] selectedFiles;

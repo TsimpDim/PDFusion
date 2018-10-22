@@ -4,15 +4,13 @@ import control.PdfWorkspace;
 import control.WatermarkOptions;
 
 import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 
 public class WatermarkWindow extends JFrame {
+
+    private static final long serialVersionUID = -851579248518215206L;
 
     private JPanel container;
     private JPanel insetSubContainer;

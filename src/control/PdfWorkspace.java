@@ -1,28 +1,29 @@
 package control;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-
-import javax.swing.JOptionPane;
-
 import com.itextpdf.io.font.FontConstants;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.geom.Rectangle;
-import com.itextpdf.kernel.pdf.*;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfPage;
+import com.itextpdf.kernel.pdf.PdfReader;
+import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
 import com.itextpdf.kernel.pdf.extgstate.PdfExtGState;
 import com.itextpdf.kernel.utils.PdfMerger;
-
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.property.TextAlignment;
 import com.itextpdf.layout.property.VerticalAlignment;
 import gui.ResultsWindow;
 import gui.WtrmkResultsWindow;
+
+import javax.swing.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 
 public class PdfWorkspace{
 
@@ -206,6 +207,11 @@ public class PdfWorkspace{
 		return allFiles.get(index);
 	}
 
+	/**
+	 * Makes checks for watermarking and initiates it
+	 * @param wtrmkOptions The watermarking options from the {@link WtrmkResultsWindow}
+	 * @return -1 if watermarking can't start, else returns 0
+	 */
 	public int watermarkFiles(WatermarkOptions wtrmkOptions){
 
 		// Check in case user wants to watermark selected files
@@ -239,10 +245,7 @@ public class PdfWorkspace{
 }
 
 /**
- * This inner class is responsible for all the actions that have to happen in a separate thread during merge
- * It is also responsible for altering the ResultsWindow object, updating the progress bar and the text next to it
- * @author TsimpDim
- *
+ * This inner class handles asynchronously the merging of {@link PdfFile}s.
  */
 class AsyncMerger extends Thread {
 	
@@ -317,7 +320,9 @@ class AsyncMerger extends Thread {
 	}
 }
 
-
+/**
+ * This inner class handles asynchronously the watermarking of {@link PdfFile}s.
+ */
 class AsyncStamper extends Thread{
 
 	private WtrmkResultsWindow resWindow;
