@@ -1,13 +1,12 @@
 package control;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfReader;
+
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
-
-import javax.swing.JOptionPane;
-
-import com.itextpdf.kernel.pdf.PdfDocument;
-import com.itextpdf.kernel.pdf.PdfReader;
 
 public class PdfFile extends File{
 
@@ -15,7 +14,7 @@ public class PdfFile extends File{
 	private static final long serialVersionUID = -8832254767996433033L;
 	
 	private String path;
-	private ArrayList<Integer> pages = new ArrayList<Integer>();
+	private ArrayList<Integer> pages = new ArrayList<>();
 	private ArrayList<Integer> availablePages = null;
 	private Integer numberOfAvailablePages = -1;
 	private String pageInput = "All"; // User input in the 'pages' cell
@@ -136,10 +135,6 @@ public class PdfFile extends File{
 		}else{
 			return this.availablePages;
 		}
-	}
-	
-	public void setPages(ArrayList<Integer> pages) {
-		this.pages = pages;
 	}
 	
 	/**

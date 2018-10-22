@@ -5,8 +5,6 @@ import control.WatermarkOptions;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class WatermarkWindow extends JFrame {
 
@@ -87,50 +85,42 @@ public class WatermarkWindow extends JFrame {
         watermarkButton.setMaximumSize(new Dimension(100, 50));
         watermarkButton.setAlignmentX(RIGHT_ALIGNMENT);
         watermarkButton.setFont(new Font("Arial", Font.PLAIN, 12));
-        watermarkButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String wtrmkText = wtrmkTextField.getText();
+        watermarkButton.addActionListener(e -> {
+            String wtrmkText = wtrmkTextField.getText();
 
-                if(wtrmkText.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Watermark text cannot be empty.", "Warning", JOptionPane.WARNING_MESSAGE);
-                    return;
-                }
-
-                Integer wtrmkPos = wtrmkPositionDropdown.getSelectedIndex();
-                Integer wtrmkRot = (Integer) wtrmkRotationSpinner.getValue();
-                Integer wtrmkOpac = wtrmkOpacitySlider.getValue();
-                Integer wtrmkFontSize = (Integer) wtrmkFontSizeSpinner.getValue();
-                Boolean wtrmkAllFiles = false;
-
-                if(wtrmkAllFilesRadioBut.isSelected())
-                    wtrmkAllFiles = true;
-
-                if(!wtrmkAllFiles && selectedRows.length == 0){ // Wtrmk selected files but no files are selected
-                    JOptionPane.showMessageDialog(null, "No files/rows are selected.", "Warning", JOptionPane.WARNING_MESSAGE);
-                    return;
-                }
-
-                // !!! Despite wtrmkOpac being an Integer it is saved as a float for easier use !!!
-                // Division by 100 is done to convert Opacity to a range from 0-0.1 instead of 0-100 (i.e a percentage)
-                WatermarkOptions wtrmkOptions = new WatermarkOptions(selectedRows, wtrmkText, wtrmkPos, wtrmkRot, (float)wtrmkOpac/100, wtrmkFontSize, wtrmkAllFiles);
-                workspace.watermarkFiles(wtrmkOptions);
-
-                setVisible(false);
-                dispose();
+            if(wtrmkText.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Watermark text cannot be empty.", "Warning", JOptionPane.WARNING_MESSAGE);
+                return;
             }
+
+            Integer wtrmkPos = wtrmkPositionDropdown.getSelectedIndex();
+            Integer wtrmkRot = (Integer) wtrmkRotationSpinner.getValue();
+            Integer wtrmkOpac = wtrmkOpacitySlider.getValue();
+            Integer wtrmkFontSize = (Integer) wtrmkFontSizeSpinner.getValue();
+            Boolean wtrmkAllFiles = false;
+
+            if(wtrmkAllFilesRadioBut.isSelected())
+                wtrmkAllFiles = true;
+
+            if(!wtrmkAllFiles && selectedRows.length == 0){ // Wtrmk selected files but no files are selected
+                JOptionPane.showMessageDialog(null, "No files/rows are selected.", "Warning", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            // !!! Despite wtrmkOpac being an Integer it is saved as a float for easier use !!!
+            // Division by 100 is done to convert Opacity to a range from 0-0.1 instead of 0-100 (i.e a percentage)
+            WatermarkOptions wtrmkOptions = new WatermarkOptions(selectedRows, wtrmkText, wtrmkPos, wtrmkRot, (float)wtrmkOpac/100, wtrmkFontSize, wtrmkAllFiles);
+            workspace.watermarkFiles(wtrmkOptions);
+
+            setVisible(false);
+            dispose();
         });
 
         cancelButton = new JButton("Cancel");
         cancelButton.setMaximumSize(new Dimension(100, 50));
         cancelButton.setAlignmentX(RIGHT_ALIGNMENT);
         cancelButton.setFont(new Font("Arial", Font.PLAIN, 12));
-        cancelButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dispose();
-            }
-        });
+        cancelButton.addActionListener(e -> dispose());
 
         controlButtonsPanel.add(cancelButton);
         controlButtonsPanel.add(watermarkButton);

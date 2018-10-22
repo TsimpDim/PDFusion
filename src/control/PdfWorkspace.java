@@ -29,7 +29,7 @@ public class PdfWorkspace{
 
 	public static int totalFiles = 0;
 	public static int totalFilesToInclude = 0;
-	private ArrayList<PdfFile> allFiles = new ArrayList<PdfFile>();
+	private ArrayList<PdfFile> allFiles = new ArrayList<>();
 	private ArrayList<PdfFile> removedFiles = new ArrayList<>();
 	
 	/***

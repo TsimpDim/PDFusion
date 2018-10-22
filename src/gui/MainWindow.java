@@ -1,17 +1,16 @@
 package gui;
 
+import control.PdfFile;
+import control.PdfWorkspace;
+
+import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.ArrayList;
-
-import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
-
-import control.PdfFile;
-import control.PdfWorkspace;
 
 public class MainWindow extends JFrame{
 
@@ -146,7 +145,7 @@ public class MainWindow extends JFrame{
 		this.setContentPane(container);
 
 		this.setTitle("PDFusion Workspace");
-		ArrayList<Image> icons = new ArrayList<Image>();
+		ArrayList<Image> icons = new ArrayList<>();
 		icons.add(new ImageIcon(getClass().getResource("/res/PDFusion_logo_16.png")).getImage());
 		icons.add(new ImageIcon(getClass().getResource("/res/PDFusion_logo_20.png")).getImage());
 		icons.add(new ImageIcon(getClass().getResource("/res/PDFusion_logo_32.png")).getImage());
@@ -203,7 +202,7 @@ public class MainWindow extends JFrame{
 				}
 			} else if (arg0.getSource().equals(watermarkFiles)){ // Watermark files
 
-				WatermarkWindow wtrmkWindow = new WatermarkWindow(workspace, fileTable.getSelectedRows());
+				new WatermarkWindow(workspace, fileTable.getSelectedRows());
 			}
 		}
 	}
@@ -213,8 +212,10 @@ public class MainWindow extends JFrame{
 	 */
 	class DeleteRowsAction extends AbstractAction {
 
+		private static final long serialVersionUID = 8380768403177959272L;
+
 		public DeleteRowsAction(String text, ImageIcon icon,
-						  String desc, Integer mnemonic, KeyStroke accelerator) {
+								String desc, Integer mnemonic, KeyStroke accelerator) {
 			super(text, icon);
 			putValue(SHORT_DESCRIPTION, desc);
 			putValue(MNEMONIC_KEY, mnemonic);
@@ -250,6 +251,8 @@ public class MainWindow extends JFrame{
 	 */
 	class MoveRowsUpAction extends AbstractAction{
 
+		private static final long serialVersionUID = 3522968040593462776L;
+
 		public MoveRowsUpAction(String text, ImageIcon icon,
 								String desc, Integer mnemonic, KeyStroke accelerator) {
 			super(text, icon);
@@ -275,8 +278,10 @@ public class MainWindow extends JFrame{
 	 */
 	class MoveRowsDownAction extends AbstractAction{
 
+		private static final long serialVersionUID = -166008514298037644L;
+
 		public MoveRowsDownAction(String text, ImageIcon icon,
-								String desc, Integer mnemonic, KeyStroke accelerator) {
+								  String desc, Integer mnemonic, KeyStroke accelerator) {
 			super(text, icon);
 			putValue(SHORT_DESCRIPTION, desc);
 			putValue(MNEMONIC_KEY, mnemonic);
@@ -300,8 +305,10 @@ public class MainWindow extends JFrame{
 	 */
 	class DuplicateRowsAction extends AbstractAction{
 
+		private static final long serialVersionUID = -1381937240965848408L;
+
 		public DuplicateRowsAction(String text, ImageIcon icon,
-								  String desc, Integer mnemonic, KeyStroke accelerator) {
+								   String desc, Integer mnemonic, KeyStroke accelerator) {
 			super(text, icon);
 			putValue(SHORT_DESCRIPTION, desc);
 			putValue(MNEMONIC_KEY, mnemonic);
@@ -324,8 +331,10 @@ public class MainWindow extends JFrame{
 	 */
 	class UndoDeletionAction extends AbstractAction{
 
+		private static final long serialVersionUID = -5792826424475287932L;
+
 		public UndoDeletionAction(String text, ImageIcon icon,
-								   String desc, Integer mnemonic, KeyStroke accelerator) {
+								  String desc, Integer mnemonic, KeyStroke accelerator) {
 			super(text, icon);
 			putValue(SHORT_DESCRIPTION, desc);
 			putValue(MNEMONIC_KEY, mnemonic);
@@ -342,6 +351,8 @@ public class MainWindow extends JFrame{
 	 * Opens all the selected files
 	 */
 	class OpenFileAction extends AbstractAction {
+
+		private static final long serialVersionUID = 7657012530064869813L;
 
 		public OpenFileAction(String text, ImageIcon icon, String desc) {
 			super(text, icon);

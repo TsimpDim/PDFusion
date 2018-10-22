@@ -1,13 +1,10 @@
 package gui;
 
-import java.awt.Component;
-import java.util.ArrayList;
-
-import javax.swing.JLabel;
-import javax.swing.JTable;
-import javax.swing.table.DefaultTableCellRenderer;
-
 import control.PdfWorkspace;
+
+import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
+import java.awt.*;
 
 class PageCellRenderer extends DefaultTableCellRenderer {
 

@@ -2,8 +2,6 @@ package gui;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 public class WtrmkResultsWindow extends JFrame{
@@ -17,9 +15,6 @@ public class WtrmkResultsWindow extends JFrame{
     JLabel label;
     JProgressBar progBar;
     JButton continueButton;
-
-    String filename;
-    String destination;
 
     int min = 0;
     int max = 0;
@@ -39,12 +34,7 @@ public class WtrmkResultsWindow extends JFrame{
         continueButton = new JButton("Continue");
         continueButton.setEnabled(false);
         continueButton.setFocusable(false);
-        continueButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dispose();
-            }
-        });
+        continueButton.addActionListener(e -> dispose());
 
         progBarContainer.add(label);
         progBarContainer.add(progBar);
@@ -86,9 +76,4 @@ public class WtrmkResultsWindow extends JFrame{
     public void changeLabel(String newString) {
         label.setText(newString);
     }
-
-    public void showBar() {
-        this.setVisible(true);
-    }
-
 }
