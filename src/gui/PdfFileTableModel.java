@@ -1,11 +1,11 @@
 package gui;
 
-import java.util.ArrayList;
-
-import javax.swing.JOptionPane;
-import javax.swing.table.AbstractTableModel;
 import control.PdfFile;
 import control.PdfWorkspace;
+
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import java.util.ArrayList;
 
 public class PdfFileTableModel extends AbstractTableModel{
 
@@ -85,7 +85,7 @@ public class PdfFileTableModel extends AbstractTableModel{
 	    	
 	    	// Check if pages entered exist in the file
 			// First get all available pages
-	    	ArrayList<Integer> availableFilePages = new ArrayList<>(files.get(row).getPages());
+	    	ArrayList<Integer> availableFilePages = new ArrayList<>(files.get(row).getAvailablePages());
 
 	    	// And then set the pages to what the user wants
 	    	files.get(row).setPages((String) value);
