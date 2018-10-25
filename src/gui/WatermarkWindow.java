@@ -5,6 +5,7 @@ import control.WatermarkOptions;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 
 public class WatermarkWindow extends JFrame {
 
@@ -158,9 +159,18 @@ public class WatermarkWindow extends JFrame {
         container.add(Box.createHorizontalGlue());
         container.add(controlButtonsPanel);
 
+        ArrayList<Image> icons = new ArrayList<>();
+        icons.add(new ImageIcon(getClass().getResource("/res/PDFusion_logo_16.png")).getImage());
+        icons.add(new ImageIcon(getClass().getResource("/res/PDFusion_logo_20.png")).getImage());
+        icons.add(new ImageIcon(getClass().getResource("/res/PDFusion_logo_32.png")).getImage());
+        icons.add(new ImageIcon(getClass().getResource("/res/PDFusion_logo_40.png")).getImage());
+        icons.add(new ImageIcon(getClass().getResource("/res/PDFusion_logo_64.png")).getImage());
+        icons.add(new ImageIcon(getClass().getResource("/res/PDFusion_logo_128.png")).getImage());
+        this.setIconImages(icons);
+
         this.setContentPane(container);
         this.setTitle("PDFusion Stamper");
-        this.setSize(400,550);
+        this.setSize(400,525);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setVisible(true);
         this.setResizable(false);
