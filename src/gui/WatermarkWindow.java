@@ -160,7 +160,7 @@ public class WatermarkWindow extends JFrame {
 
         this.setContentPane(container);
         this.setTitle("PDFusion Stamper");
-        this.setSize(400,525);
+        this.setSize(400,550);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setVisible(true);
         this.setResizable(false);
