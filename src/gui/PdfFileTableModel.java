@@ -1,11 +1,11 @@
 package gui;
 
-import java.util.ArrayList;
-
-import javax.swing.JOptionPane;
-import javax.swing.table.AbstractTableModel;
 import control.PdfFile;
 import control.PdfWorkspace;
+
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import java.util.ArrayList;
 
 public class PdfFileTableModel extends AbstractTableModel{
 
@@ -47,7 +47,7 @@ public class PdfFileTableModel extends AbstractTableModel{
 		case 2:
 			return req_file.getPagesString();
 		case 3:
-			return req_file.getToMerge();
+			return req_file.getToInclude();
 		default:
 			return null;
 		
@@ -73,22 +73,28 @@ public class PdfFileTableModel extends AbstractTableModel{
 	public void setValueAt(Object value, int row, int col) {
 
 	    if (col == BOOLEAN_COLUMN) {
-            files.get(row).setToMerge((Boolean) value);
+            files.get(row).setToInclude((Boolean) value);
             this.fireTableCellUpdated(row, col);
             
             if((Boolean) value == false)
-            	PdfWorkspace.totalFilesToMerge--;
+            	PdfWorkspace.totalFilesToInclude--;
             else
-            	PdfWorkspace.totalFilesToMerge++;
+            	PdfWorkspace.totalFilesToInclude++;
             
 	    }else if(col == PAGES_COLUMN) {
 	    	
 	    	// Check if pages entered exist in the file
-	    	ArrayList<Integer> availableFilePages = new ArrayList<>(files.get(row).getPages());
+			// First get all available pages
+	    	ArrayList<Integer> availableFilePages = new ArrayList<>(files.get(row).getAvailablePages());
+
+	    	// And then set the pages to what the user wants
 	    	files.get(row).setPages((String) value);
-	    	
+
+	    	// If what the user inputted is NOT in the available pages
 	    	if(!availableFilePages.containsAll(files.get(row).getPages())) {
-	    		files.get(row).setPages("all");
+	    		files.get(row).setPages("All");
+	    		files.get(row).setPageInput("All");
+
 				JOptionPane.showMessageDialog(null, "Selected page range is not available.", "Warning", JOptionPane.WARNING_MESSAGE);
 	    	}
 	    		

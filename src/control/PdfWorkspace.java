@@ -1,4 +1,23 @@
 package control;
+import com.itextpdf.io.font.FontConstants;
+import com.itextpdf.kernel.font.PdfFont;
+import com.itextpdf.kernel.font.PdfFontFactory;
+import com.itextpdf.kernel.geom.Rectangle;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfPage;
+import com.itextpdf.kernel.pdf.PdfReader;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
+import com.itextpdf.kernel.pdf.extgstate.PdfExtGState;
+import com.itextpdf.kernel.utils.PdfMerger;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.property.TextAlignment;
+import com.itextpdf.layout.property.VerticalAlignment;
+import gui.ResultsWindow;
+import gui.WtrmkResultsWindow;
+
+import javax.swing.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -6,35 +25,26 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
-import javax.swing.JOptionPane;
-
-import com.itextpdf.kernel.pdf.PdfDocument;
-import com.itextpdf.kernel.pdf.PdfReader;
-import com.itextpdf.kernel.pdf.PdfWriter;
-import com.itextpdf.kernel.utils.PdfMerger;
-
-import gui.ResultsWindow;
-
 public class PdfWorkspace{
 
 	public static int totalFiles = 0;
-	public static int totalFilesToMerge = 0;
-	private ArrayList<PdfFile> allFiles = new ArrayList<PdfFile>();
+	public static int totalFilesToInclude = 0;
+	private ArrayList<PdfFile> allFiles = new ArrayList<>();
+	private ArrayList<PdfFile> removedFiles = new ArrayList<>();
 	
 	/***
 	 * Merges all the files in the allFiles {@link ArrayList}
-	 * @param filename The filename of the resulting file e.g "export.pdf"
 	 * @param destination The full path of the resulting file location
 	 * @param progBar The results window
 	 * @return 0 if merge finished correctly, else return -1
 	 */
-	public int mergeFiles(String filename, String destination, ResultsWindow progBar){
+	public int mergeFiles(String destination, ResultsWindow progBar){
 		
 		PdfDocument pdf = null;
 		boolean targetFileExists = false;
 		
 		// Check if the conditions of the Workspace allow for files to be merged
-		if(totalFilesToMerge <= 0 || totalFiles <= 0) {
+		if(totalFilesToInclude <= 0 || totalFiles <= 0) {
 			JOptionPane.showMessageDialog(null, "No files to merge found.", "Warning", JOptionPane.WARNING_MESSAGE);
 			return -1;
 		}
@@ -87,7 +97,7 @@ public class PdfWorkspace{
 	public void addFileToWorkspace(PdfFile p) {
 		allFiles.add(p);
 		totalFiles++;
-		totalFilesToMerge++;
+		totalFilesToInclude++;
 	}
 	
 	/**
@@ -98,16 +108,25 @@ public class PdfWorkspace{
 	public boolean removeFilesFromWorkspace(int[] rows) {
 		Integer[] newRows = Arrays.stream(rows).boxed().toArray( Integer[]::new );
 		Arrays.sort(newRows, Collections.reverseOrder());
+		ArrayList<PdfFile> backupRemovedFiles = new ArrayList<>(removedFiles); // Keep a backup in case deletion fails
+
+		removedFiles.clear(); // Forget previous deleted files
 		for(Integer row : newRows) {
-			if(row > allFiles.size())
+			if(row > allFiles.size()) {
+				removedFiles = new ArrayList<>(backupRemovedFiles); // Restore the previous deleted files in case the deletion fails
 				return false;
-			
+			}
+
+			// Save removed files to the workspace for chance of undoing the deletion
+			removedFiles.add(this.getFile(row));
+
+			// Delete them
 			allFiles.remove(allFiles.get(row));
 			
 			totalFiles--;
-			totalFilesToMerge--;
+			totalFilesToInclude--;
 		}
-		
+
 		return true;
 	}
 	
@@ -157,14 +176,25 @@ public class PdfWorkspace{
 		return true;
 		
 	}
-	
-	
+
+	public void undoPreviousDeletion(){
+
+		for(PdfFile file : removedFiles) {
+			this.addFileToWorkspace(file);
+
+			totalFiles--;
+			totalFilesToInclude--;
+		}
+
+		removedFiles.clear();
+	}
+
 	@Override
 	public String toString() {
 		String finalString = "----- WORKSPACE\n";
 		
 		for(PdfFile f : allFiles)
-			finalString += f.getPath() + ',' + String.valueOf(f.getFileId()) + ',' + String.valueOf(f.getToMerge()) + '\n';
+			finalString += f.getPath() + ',' + String.valueOf(f.getFileId()) + ',' + String.valueOf(f.getToInclude()) + '\n';
 		
 		return finalString;
 	}
@@ -176,13 +206,46 @@ public class PdfWorkspace{
 	public PdfFile getFile(int index) {
 		return allFiles.get(index);
 	}
+
+	/**
+	 * Makes checks for watermarking and initiates it
+	 * @param wtrmkOptions The watermarking options from the {@link WtrmkResultsWindow}
+	 * @return -1 if watermarking can't start, else returns 0
+	 */
+	public int watermarkFiles(WatermarkOptions wtrmkOptions){
+
+		// Check in case user wants to watermark selected files
+		// But none of the selected is set to be included
+		if(!wtrmkOptions.getWtrmkAllFiles()){
+			int filesNotToInclude = 0;
+
+			for(int index : wtrmkOptions.getSelectedFiles()){
+				if(!getFile(index).getToInclude())
+					filesNotToInclude++;
+			}
+
+			if(filesNotToInclude == wtrmkOptions.getSelectedFiles().length){
+				JOptionPane.showMessageDialog(null, "None of your files are set to be included", "Warning", JOptionPane.WARNING_MESSAGE);
+				return -1;
+			}
+		}else{ // If user wants to watermark all files but again, none are set to be included
+			if(totalFilesToInclude == 0){
+				JOptionPane.showMessageDialog(null, "None of your files are set to be included", "Warning", JOptionPane.WARNING_MESSAGE);
+				return -1;
+			}
+		}
+
+		
+		WtrmkResultsWindow resWindow = new WtrmkResultsWindow((wtrmkOptions.getWtrmkAllFiles() ? totalFilesToInclude : wtrmkOptions.getSelectedFiles().length), "Gathering files");
+		AsyncStamper watermarker = new AsyncStamper(resWindow, this.allFiles, wtrmkOptions);
+		watermarker.start();
+
+		return 0;
+	}
 }
 
 /**
- * This inner class is responsible for all the actions that have to happen in a separate thread during merge
- * It is also responsible for altering the ResultsWindow object, updating the progress bar and the text next to it
- * @author TsimpDim
- *
+ * This inner class handles asynchronously the merging of {@link PdfFile}s.
  */
 class AsyncMerger extends Thread {
 	
@@ -224,7 +287,7 @@ class AsyncMerger extends Thread {
 		// Parse every file in the workspace and add it to the new file
 		for(PdfFile file : allFiles) {
 			
-			if(file.getToMerge()) {
+			if(file.getToInclude()) {
 				PdfDocument sourcePdf = null;
 				try {
 					sourcePdf = new PdfDocument(new PdfReader(file.getPath()));
@@ -233,6 +296,7 @@ class AsyncMerger extends Thread {
 					e.printStackTrace();
 					continue;
 				}
+
 				merger.merge(sourcePdf, file.getPages());
 			
 				sourcePdf.close();
@@ -253,5 +317,131 @@ class AsyncMerger extends Thread {
 		}
 		
 		progBar.changeLabel("Done");
+	}
+}
+
+/**
+ * This inner class handles asynchronously the watermarking of {@link PdfFile}s.
+ */
+class AsyncStamper extends Thread{
+
+	private WtrmkResultsWindow resWindow;
+	private ArrayList<PdfFile> allFiles;
+	private WatermarkOptions options;
+
+
+	public AsyncStamper(WtrmkResultsWindow resWindow, ArrayList<PdfFile> allFiles, WatermarkOptions options){
+	    this.allFiles = allFiles;
+		this.resWindow = resWindow;
+		this.options = options;
+	}
+
+	@Override
+	public void run(){
+		// Set which files are to be watermarked
+		ArrayList<PdfFile> filesToWtrmk = new ArrayList<>(allFiles);
+		if(!options.getWtrmkAllFiles()) {
+			filesToWtrmk.clear();
+			for (int index : options.getSelectedFiles())
+				filesToWtrmk.add(allFiles.get(index));
+		}
+
+		// Start watermarking
+		resWindow.changeLabel("Watermarking files");
+		for (PdfFile curFile : filesToWtrmk){
+
+			if(!curFile.getToInclude())
+				continue;
+
+			String dest = curFile.getPath().replace(".pdf", ".bak");
+			PdfDocument pdfDoc;
+
+			try {
+				pdfDoc = new PdfDocument(new PdfReader(curFile.getPath()), new PdfWriter(dest));
+			}catch(java.io.IOException e){
+				JOptionPane.showMessageDialog(null, "Some files could not be read", "Warning", JOptionPane.WARNING_MESSAGE);
+				return;
+			}
+
+			Document doc = new Document(pdfDoc);
+
+
+			// Watermark Text
+			Paragraph p = new Paragraph(options.getWtrmkText());
+			PdfCanvas over;
+
+			// Opacity
+			PdfExtGState gs1 = new PdfExtGState().setFillOpacity(options.getWtrmkOpac());
+
+			// Page Size
+			Rectangle pageSize;
+			float x,y;
+
+			// Watermark positions
+            Integer wtrmkPos = options.getWtrmkPos();
+
+            PdfFont pageFont;
+            try {
+                pageFont = PdfFontFactory.createFont(FontConstants.HELVETICA);
+            }catch(java.io.IOException e){
+                return;
+            }
+
+            p.setFont(pageFont);
+            p.setFontSize(options.getWtrmkFontSize());
+
+            Float x_offset = pageFont.getWidth(options.getWtrmkText(), options.getWtrmkFontSize())/2;
+            Integer y_offset = pageFont.getAscent(options.getWtrmkText(), options.getWtrmkFontSize()); // Replace fontSize with WatermarkOptions property
+
+            for(Integer pageIdx : curFile.getPages()) { // Watermark only selected page range
+                PdfPage page = pdfDoc.getPage(pageIdx);
+                pageSize = page.getPageSizeWithRotation();
+                page.setIgnorePageRotationForContent(true);
+
+                // Set watermark position
+				if(wtrmkPos == 0) { // Top Left
+					x = pageSize.getLeft() + x_offset;
+					y = pageSize.getTop() - y_offset;
+				}else if(wtrmkPos == 1){ // Top Right
+					x = pageSize.getRight() - x_offset;
+					y = pageSize.getTop() - y_offset;
+				}else if(wtrmkPos == 2){ // Top Center
+					x = (pageSize.getLeft() + pageSize.getRight()) / 2;
+					y = pageSize.getTop() - y_offset;
+				}else if(wtrmkPos == 3){ // Bottom Left
+					x = pageSize.getLeft() + x_offset;
+					y = pageSize.getBottom() + y_offset;
+				}else if(wtrmkPos == 4){ // Bottom Right
+					x = pageSize.getRight() - x_offset;
+					y = pageSize.getBottom() + y_offset;
+				}else if(wtrmkPos == 5){ // Bottom Center
+					x = (pageSize.getLeft() + pageSize.getRight()) / 2;
+					y = pageSize.getBottom() + y_offset;
+				}else{ // Center
+					x = (pageSize.getLeft() + pageSize.getRight()) / 2;
+					y = (pageSize.getTop() + pageSize.getBottom()) / 2;
+				}
+
+				over = new PdfCanvas(page);
+				over.saveState();
+				over.setFontAndSize(pageFont, options.getWtrmkFontSize());
+				over.setExtGState(gs1);
+				doc.showTextAligned(p, x, y, pageIdx, TextAlignment.CENTER, VerticalAlignment.MIDDLE, (float)Math.toRadians(options.getWtrmkRot()));
+			}
+
+			doc.close();
+
+			// Replace .pdf with .bak
+			File fileWithoutWtrmk = new File(curFile.getPath());
+			File fileWithWtrmk = new File(curFile.getPath().replace(".pdf", ".bak"));
+
+			// Delete the file we want to overwrite
+			fileWithoutWtrmk.delete();
+			fileWithWtrmk.renameTo(new File(curFile.getPath().replace(".bak", ".pdf"))); // Rename .bak to .pdf
+
+			resWindow.incrementValue();
+		}
+
+		resWindow.changeLabel("Watermarking completed");
 	}
 }

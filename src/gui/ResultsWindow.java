@@ -1,22 +1,12 @@
 package gui;
 
-import java.awt.BorderLayout;
-import java.awt.Desktop;
-import java.awt.Image;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
 
 public class ResultsWindow extends JFrame{
 
@@ -38,9 +28,8 @@ public class ResultsWindow extends JFrame{
 	int min = 0;
 	int max = 0;
 	
-	public ResultsWindow(int max, String labelStr, String filename, String destination) {
+	public ResultsWindow(int max, String labelStr,  String destination) {
 		this.max = max;
-		this.filename = filename;
 		this.destination = destination;
 		
 		ButtonListener buttonListener = new ButtonListener();
@@ -56,7 +45,7 @@ public class ResultsWindow extends JFrame{
 		openMergedFileCB = new JCheckBox("Open merged file");
 		openMergedFileCB.setFocusable(false);
 		openMergedFileCB.setEnabled(false);
-		
+
 		openMergedFileDirectoryCB = new JCheckBox("Open merged file directory");
 		openMergedFileDirectoryCB.setFocusable(false);
 		openMergedFileDirectoryCB.setEnabled(false);
@@ -80,7 +69,7 @@ public class ResultsWindow extends JFrame{
 		
 		this.setTitle("PDFusion - Results...");
 
-		ArrayList<Image> icons = new ArrayList<Image>();
+		ArrayList<Image> icons = new ArrayList<>();
 		icons.add(new ImageIcon(getClass().getResource("/res/PDFusion_logo_16.png")).getImage());
 		icons.add(new ImageIcon(getClass().getResource("/res/PDFusion_logo_20.png")).getImage());
 		icons.add(new ImageIcon(getClass().getResource("/res/PDFusion_logo_32.png")).getImage());
@@ -91,7 +80,7 @@ public class ResultsWindow extends JFrame{
 
 		this.setContentPane(container);
 		this.setVisible(false);
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		this.setSize(400,150);
 	}
 	
