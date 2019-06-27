@@ -6,9 +6,7 @@ import control.PdfWorkspace;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.io.File;
 import java.util.ArrayList;
 
@@ -107,6 +105,26 @@ public class MainWindow extends JFrame{
 		fileTable.getColumnModel().getColumn(2).setCellRenderer(new PageCellRenderer(works));
 		fileTable.setAutoCreateRowSorter(true);
 		fileTablePane = new JScrollPane(fileTable);
+
+		// Table Double-Click
+		fileTable.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent mouseEvent) {
+				JTable table =(JTable) mouseEvent.getSource();
+				Point point = mouseEvent.getPoint();
+				int row = table.rowAtPoint(point);
+				if (mouseEvent.getClickCount() == 2) {
+					int selectedRow = fileTable.getSelectedRow();
+					if(selectedRow > -1) {
+						try{
+							Desktop.getDesktop().open(new File(workspace.getFile(row).getPath()));
+						}catch(java.io.IOException | java.lang.IllegalArgumentException ex){
+							JOptionPane.showMessageDialog(null, "Could not open file.", "Error!", JOptionPane.ERROR_MESSAGE);
+						}
+					}
+
+				}
+			}
+		});
 
 		// Table Right-Click Menu
 		tableMenu = new JPopupMenu();
@@ -350,7 +368,7 @@ public class MainWindow extends JFrame{
 	/**
 	 * Opens all the selected files
 	 */
-	class OpenFileAction extends AbstractAction {
+	 class OpenFileAction extends AbstractAction {
 
 		private static final long serialVersionUID = 7657012530064869813L;
 
@@ -360,7 +378,6 @@ public class MainWindow extends JFrame{
 		}
 
 		public void actionPerformed(ActionEvent e){
-
 			int selectedRow = fileTable.getSelectedRow();
 			if(selectedRow > -1) {
 				int[] selectedRows = fileTable.getSelectedRows();
@@ -373,7 +390,6 @@ public class MainWindow extends JFrame{
 					}
 				}
 			}
-
 		}
 	}
 }
