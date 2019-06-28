@@ -40,7 +40,7 @@ public class MainWindow extends JFrame{
 	MoveRowsDownAction moveSelectionDownAction = new MoveRowsDownAction("Move file down", null, null, null, KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, ActionEvent.ALT_MASK));
 	DuplicateRowsAction duplicateSelectionAction = new DuplicateRowsAction("Duplicate file(s)", null, null, null, KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.CTRL_MASK));
 	UndoDeletionAction undoDeletionAction = new UndoDeletionAction("Undo deletion", null, null, null, KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
-	OpenFileAction openFileAction = new OpenFileAction("Open selected file(s)", null, null);
+	OpenFileAction openFileAction = new OpenFileAction("Open selected file(s)", null, null, null, KeyStroke.getKeyStroke(KeyEvent.VK_ENTER,0));
 
 	public MainWindow(PdfWorkspace works) {
 
@@ -92,6 +92,10 @@ public class MainWindow extends JFrame{
 		tableModel = new PdfFileTableModel(null);
 		fileTable.setFillsViewportHeight(true);
 		fileTable.setModel(tableModel);
+
+		// Remove default ENTER-KEY behavior
+		fileTable.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+				.put(KeyStroke.getKeyStroke("ENTER"), "none");
 
 		PageCellRenderer leftAlignedRenderer = new  PageCellRenderer(works);
 		leftAlignedRenderer.setHorizontalAlignment(JLabel.LEFT);
@@ -151,6 +155,8 @@ public class MainWindow extends JFrame{
 		selectionMenu.add(moveSelectionDownAction);
 		selectionMenu.add(duplicateSelectionAction);
 		selectionMenu.add(undoDeletionAction);
+		selectionMenu.add(new JSeparator());
+		selectionMenu.add(openFileAction);
 
 		menuBar.add(openMenu);
 		menuBar.add(editMenu);
@@ -372,9 +378,13 @@ public class MainWindow extends JFrame{
 
 		private static final long serialVersionUID = 7657012530064869813L;
 
-		public OpenFileAction(String text, ImageIcon icon, String desc) {
+		public OpenFileAction(String text, ImageIcon icon,
+							  String desc, Integer mnemonic, KeyStroke accelerator) {
+
 			super(text, icon);
 			putValue(SHORT_DESCRIPTION, desc);
+			putValue(MNEMONIC_KEY, mnemonic);
+			putValue(ACCELERATOR_KEY, accelerator);
 		}
 
 		public void actionPerformed(ActionEvent e){
