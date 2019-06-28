@@ -6,8 +6,13 @@ import control.PdfWorkspace;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.*;
 import java.io.File;
+import java.nio.file.Files;
 import java.util.ArrayList;
 
 public class MainWindow extends JFrame{
@@ -96,6 +101,41 @@ public class MainWindow extends JFrame{
 		// Remove default ENTER-KEY behavior
 		fileTable.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
 				.put(KeyStroke.getKeyStroke("ENTER"), "none");
+
+		fileTable.setDropTarget(new DropTarget() {
+			public synchronized void drop(DropTargetDropEvent evt) {
+				try {
+					evt.acceptDrop(DnDConstants.ACTION_COPY);
+					Boolean allFilesCorrect = true;
+					ArrayList<File> droppedFiles = (ArrayList<File>) evt.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
+
+					for (File file : droppedFiles) {
+
+						// Get extension
+						String extension = " ";
+						int i = file.getName().lastIndexOf('.');
+						if (i >= 0) { extension = file.getName().substring(i+1); } // Has extension
+						else { allFilesCorrect = false; } // Does not have extension
+
+						// Check if PDF and add to workspace
+						if(extension.equals("pdf")) {
+							works.addFileToWorkspace(new PdfFile(file, PdfWorkspace.totalFiles));
+							tableModel.updateData(workspace.getAllFiles());
+						}else{
+							allFilesCorrect = false;
+						}
+
+						if(!allFilesCorrect)
+							JOptionPane.showMessageDialog(null, "Could not add all files\nOnly PDF files can be added into the workspace!", "Error!", JOptionPane.ERROR_MESSAGE);
+
+					}
+
+					evt.dropComplete(true);
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+		});
 
 		PageCellRenderer leftAlignedRenderer = new  PageCellRenderer(works);
 		leftAlignedRenderer.setHorizontalAlignment(JLabel.LEFT);

@@ -77,6 +77,20 @@ public class PdfFile extends File{
 		this.fileId = master.fileId;
 	}
 
+	/**
+	 * Creates a new {@link PdfFile} from a {@link File}
+	 * @param file The master file of {@link File} type
+	 * @param fileId The id of the new file (workspace.totalFiles)
+	 */
+	public PdfFile(File file, int fileId){
+		super(file.getPath());
+		this.path = file.getPath();
+		this.pages = null;
+		this.toInclude = true;
+		this.fileId = fileId;
+	}
+
+
 	public String getPath() {
 		return path;
 	}
