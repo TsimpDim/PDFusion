@@ -12,7 +12,6 @@ import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.*;
 import java.io.File;
-import java.nio.file.Files;
 import java.util.ArrayList;
 
 public class MainWindow extends JFrame{
@@ -33,19 +32,27 @@ public class MainWindow extends JFrame{
 
 	JMenuBar menuBar;
 	JMenu selectionMenu;
-	JMenu openMenu;
+	JMenu addMenu;
 	JMenu editMenu;
 
-	JMenuItem openFiles;
+	JMenuItem addFiles;
 	JMenuItem mergeFiles;
 	JMenuItem watermarkFiles;
 
-	DeleteRowsAction deleteSelectedRowsAction = new DeleteRowsAction("Delete selected file(s)", null,null, null, KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
-	MoveRowsUpAction moveSelectionUpAction = new MoveRowsUpAction("Move file up", null, null, null, KeyStroke.getKeyStroke(KeyEvent.VK_UP, ActionEvent.ALT_MASK));
-	MoveRowsDownAction moveSelectionDownAction = new MoveRowsDownAction("Move file down", null, null, null, KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, ActionEvent.ALT_MASK));
-	DuplicateRowsAction duplicateSelectionAction = new DuplicateRowsAction("Duplicate file(s)", null, null, null, KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.CTRL_MASK));
-	UndoDeletionAction undoDeletionAction = new UndoDeletionAction("Undo deletion", null, null, null, KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
-	OpenFileAction openFileAction = new OpenFileAction("Open selected file(s)", null, null, null, KeyStroke.getKeyStroke(KeyEvent.VK_ENTER,0));
+
+    ImageIcon deleteIcon = new ImageIcon(getClass().getResource("/res/actions/delete.png"));
+	ImageIcon moveUpIcon = new ImageIcon(getClass().getResource("/res/actions/move-up.png"));
+	ImageIcon moveDownIcon = new ImageIcon(getClass().getResource("/res/actions/move-down.png"));
+	ImageIcon dupliIcon = new ImageIcon(getClass().getResource("/res/actions/duplicate.png"));
+	ImageIcon undoIcon = new ImageIcon(getClass().getResource("/res/actions/undo.png"));
+	ImageIcon openIcon = new ImageIcon(getClass().getResource("/res/actions/open.png"));
+
+	DeleteRowsAction deleteSelectedRowsAction = new DeleteRowsAction("Delete selected file(s)", deleteIcon ,null, null, KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
+	MoveRowsUpAction moveSelectionUpAction = new MoveRowsUpAction("Move file up", moveUpIcon, null, null, KeyStroke.getKeyStroke(KeyEvent.VK_UP, ActionEvent.ALT_MASK));
+	MoveRowsDownAction moveSelectionDownAction = new MoveRowsDownAction("Move file down", moveDownIcon, null, null, KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, ActionEvent.ALT_MASK));
+	DuplicateRowsAction duplicateSelectionAction = new DuplicateRowsAction("Duplicate file(s)", dupliIcon, null, null, KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.CTRL_MASK));
+	UndoDeletionAction undoDeletionAction = new UndoDeletionAction("Undo deletion", undoIcon, null, null, KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
+	OpenFileAction openFileAction = new OpenFileAction("Open selected file(s)", openIcon, null, null, KeyStroke.getKeyStroke(KeyEvent.VK_ENTER,0));
 
 	public MainWindow(PdfWorkspace works) {
 
@@ -62,12 +69,14 @@ public class MainWindow extends JFrame{
 		ButtonListener buttonListener = new ButtonListener();
 		menuBar = new JMenuBar();
 
-		// Open Menu
-		openMenu = new JMenu("Open");
-		openMenu.setMnemonic(KeyEvent.VK_O);
-		openFiles = new JMenuItem("Open files");
-		openFiles.addActionListener(buttonListener);
-		openFiles.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
+		// Add Menu
+		addMenu = new JMenu("Add");
+		addMenu.setMnemonic(KeyEvent.VK_O);
+		addFiles = new JMenuItem("Add files");
+		addFiles.addActionListener(buttonListener);
+		addFiles.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
+		ImageIcon addIcon = new ImageIcon(getClass().getResource("/res/actions/add.png"));
+		addFiles.setIcon(addIcon);
 
 		// Selection Menu
 		selectionMenu = new JMenu("Selection");
@@ -80,8 +89,12 @@ public class MainWindow extends JFrame{
 
 		mergeFiles = new JMenuItem("Merge files");
 		mergeFiles.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, ActionEvent.CTRL_MASK));
+		ImageIcon mergeIcon = new ImageIcon(getClass().getResource("/res/actions/merge.png"));
+		mergeFiles.setIcon(mergeIcon);
 
 		watermarkFiles = new JMenuItem("Watermark files");
+		ImageIcon wtrmkIcon = new ImageIcon(getClass().getResource("/res/actions/watermark.png"));
+		watermarkFiles.setIcon(wtrmkIcon);
 
 		fileChooser = new JFileChooser();
 		fileChooser.setMultiSelectionEnabled(true);
@@ -124,11 +137,10 @@ public class MainWindow extends JFrame{
 						}else{
 							allFilesCorrect = false;
 						}
-
-						if(!allFilesCorrect)
-							JOptionPane.showMessageDialog(null, "Could not add all files\nOnly PDF files can be added into the workspace!", "Error!", JOptionPane.ERROR_MESSAGE);
-
 					}
+
+					if(!allFilesCorrect)
+						JOptionPane.showMessageDialog(null, "Could not add all files\nOnly PDF files can be added into the workspace!", "Error!", JOptionPane.ERROR_MESSAGE);
 
 					evt.dropComplete(true);
 				} catch (Exception ex) {
@@ -185,7 +197,7 @@ public class MainWindow extends JFrame{
 
 
 	    // Component setup
-		openMenu.add(openFiles);
+		addMenu.add(addFiles);
 
 		editMenu.add(mergeFiles);
 		editMenu.add(watermarkFiles);
@@ -198,7 +210,7 @@ public class MainWindow extends JFrame{
 		selectionMenu.add(new JSeparator());
 		selectionMenu.add(openFileAction);
 
-		menuBar.add(openMenu);
+		menuBar.add(addMenu);
 		menuBar.add(editMenu);
 		menuBar.add(selectionMenu);
 
@@ -210,12 +222,12 @@ public class MainWindow extends JFrame{
 
 		this.setTitle("PDFusion Workspace");
 		ArrayList<Image> icons = new ArrayList<>();
-		icons.add(new ImageIcon(getClass().getResource("/res/PDFusion_logo_16.png")).getImage());
-		icons.add(new ImageIcon(getClass().getResource("/res/PDFusion_logo_20.png")).getImage());
-		icons.add(new ImageIcon(getClass().getResource("/res/PDFusion_logo_32.png")).getImage());
-		icons.add(new ImageIcon(getClass().getResource("/res/PDFusion_logo_40.png")).getImage());
-		icons.add(new ImageIcon(getClass().getResource("/res/PDFusion_logo_64.png")).getImage());
-		icons.add(new ImageIcon(getClass().getResource("/res/PDFusion_logo_128.png")).getImage());
+		icons.add(new ImageIcon(getClass().getResource("/res/logo/PDFusion_logo_16.png")).getImage());
+		icons.add(new ImageIcon(getClass().getResource("/res/logo/PDFusion_logo_20.png")).getImage());
+		icons.add(new ImageIcon(getClass().getResource("/res/logo/PDFusion_logo_32.png")).getImage());
+		icons.add(new ImageIcon(getClass().getResource("/res/logo/PDFusion_logo_40.png")).getImage());
+		icons.add(new ImageIcon(getClass().getResource("/res/logo/PDFusion_logo_64.png")).getImage());
+		icons.add(new ImageIcon(getClass().getResource("/res/logo/PDFusion_logo_128.png")).getImage());
 		this.setIconImages(icons);
 
 		this.setVisible(true);
@@ -228,7 +240,7 @@ public class MainWindow extends JFrame{
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 
-			if (arg0.getSource().equals(openFiles)) { // Open files and add them into the workspace
+			if (arg0.getSource().equals(addFiles)) { // Open files and add them into the workspace
 
 				int returnVal = fileChooser.showOpenDialog(MainWindow.this);
 				if (returnVal == JFileChooser.APPROVE_OPTION) {

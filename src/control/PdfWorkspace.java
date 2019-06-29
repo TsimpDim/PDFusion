@@ -125,6 +125,9 @@ public class PdfWorkspace{
 			
 			totalFiles--;
 			totalFilesToInclude--;
+
+			if(totalFiles < 0) totalFiles = 0;
+			if(totalFilesToInclude < 0) totalFilesToInclude = 0;
 		}
 
 		return true;
