@@ -106,8 +106,8 @@ public class PdfWorkspace{
 	 * @return True if the file was removed successfully, False if the file was not in the {@link PdfWorkspace}
 	 */
 	public boolean removeFilesFromWorkspace(int[] rows) {
-		Integer[] newRows = Arrays.stream(rows).boxed().toArray( Integer[]::new );
-		Arrays.sort(newRows, Collections.reverseOrder());
+		Integer[] newRows = Arrays.stream(rows).boxed().toArray( Integer[]::new ); // int[] to Integer[]
+		Arrays.sort(newRows, Collections.reverseOrder()); // So that we can user Arrays.sort and reverse the order so that the deletion is safer
 		ArrayList<PdfFile> backupRemovedFiles = new ArrayList<>(removedFiles); // Keep a backup in case deletion fails
 
 		removedFiles.clear(); // Forget previous deleted files
@@ -122,7 +122,7 @@ public class PdfWorkspace{
 
 			// Delete them
 			allFiles.remove(allFiles.get(row));
-			
+
 			totalFiles--;
 			totalFilesToInclude--;
 

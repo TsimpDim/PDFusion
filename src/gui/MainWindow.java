@@ -303,9 +303,11 @@ public class MainWindow extends JFrame{
 			int selectedRow = fileTable.getSelectedRow();
 			if(selectedRow > -1) {
 				int[] selectedRows = fileTable.getSelectedRows();
+                int[] selectedRowsCRIM = new int[selectedRows.length]; // SelectedRowsConvertedRowIndexModel
+                for(int i = 0; i < selectedRows.length; i++)
+                    selectedRowsCRIM[i] = fileTable.convertColumnIndexToModel(selectedRows[i]);
 
-
-				if(workspace.removeFilesFromWorkspace(selectedRows)) {
+				if(workspace.removeFilesFromWorkspace(selectedRowsCRIM)) {
 					tableModel.fireTableRowsDeleted(selectedRows[0], selectedRows[selectedRows.length - 1]);
 
 					// If the deleted file was the only file then we have nothing to select

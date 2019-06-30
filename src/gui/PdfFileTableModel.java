@@ -1,5 +1,6 @@
 package gui;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import control.PdfFile;
 import control.PdfWorkspace;
 
@@ -15,6 +16,7 @@ public class PdfFileTableModel extends AbstractTableModel{
 	private static final int PAGES_COLUMN = 2;
 
 	private String[] columnNames = {"id", "path", "pages", "include"};
+	private Class[] columnClasses = {Integer.class, String.class, String.class, Boolean.class};
 	private ArrayList<PdfFile> files;
 	
 	PdfFileTableModel(ArrayList<PdfFile> files){
@@ -38,7 +40,7 @@ public class PdfFileTableModel extends AbstractTableModel{
 	@Override
 	public Object getValueAt(int row, int col) {
 		PdfFile req_file = files.get(row);
-		
+
 		switch(col) {
 		case 0: 
 			return req_file.getFileId();
@@ -61,7 +63,7 @@ public class PdfFileTableModel extends AbstractTableModel{
 	
 	@Override
     public Class<?> getColumnClass(int c) {
-        return getValueAt(0, c).getClass();
+        return columnClasses[c];
     }
 	
 	@Override
