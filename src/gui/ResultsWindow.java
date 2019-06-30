@@ -31,6 +31,7 @@ public class ResultsWindow extends JFrame{
 	public ResultsWindow(int max, String labelStr,  String destination) {
 		this.max = max;
 		this.destination = destination;
+		this.filename = new File(destination).getName();
 		
 		ButtonListener buttonListener = new ButtonListener();
 		
@@ -125,7 +126,7 @@ public class ResultsWindow extends JFrame{
 				if(openMergedFileDirectoryCB.isSelected()) {
 					try {
 						Desktop.getDesktop().open(new File(destination.replace(filename, "")));
-					} catch (IOException e) {
+					} catch (IOException | NullPointerException e) {
 						JOptionPane.showMessageDialog(null, "Something went wrong when opening the directory", "Warning", JOptionPane.WARNING_MESSAGE);
 					}
 				}
