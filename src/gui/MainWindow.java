@@ -115,6 +115,7 @@ public class MainWindow extends JFrame{
 		fileTable.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
 				.put(KeyStroke.getKeyStroke("ENTER"), "none");
 
+		// Drag n Drop
 		fileTable.setDropTarget(new DropTarget() {
 			public synchronized void drop(DropTargetDropEvent evt) {
 				try {
@@ -168,7 +169,11 @@ public class MainWindow extends JFrame{
 				JTable table =(JTable) mouseEvent.getSource();
 				Point point = mouseEvent.getPoint();
 				int row = table.rowAtPoint(point);
-				if (mouseEvent.getClickCount() == 2) {
+				int col = table.columnAtPoint(point);
+
+				// If double click
+				// And double click not on the editable columns (pages & include)
+				if (mouseEvent.getClickCount() == 2 && col != 2 && col != 3) {
 					int selectedRow = fileTable.getSelectedRow();
 					if(selectedRow > -1) {
 						try{
