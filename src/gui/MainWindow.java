@@ -6,9 +6,11 @@ import control.PdfWorkspace;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetDropEvent;
+import java.awt.event.*;
 import java.io.File;
 import java.util.ArrayList;
 
@@ -30,19 +32,27 @@ public class MainWindow extends JFrame{
 
 	JMenuBar menuBar;
 	JMenu selectionMenu;
-	JMenu openMenu;
+	JMenu addMenu;
 	JMenu editMenu;
 
-	JMenuItem openFiles;
+	JMenuItem addFiles;
 	JMenuItem mergeFiles;
 	JMenuItem watermarkFiles;
 
-	DeleteRowsAction deleteSelectedRowsAction = new DeleteRowsAction("Delete selected file(s)", null,null, null, KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
-	MoveRowsUpAction moveSelectionUpAction = new MoveRowsUpAction("Move file up", null, null, null, KeyStroke.getKeyStroke(KeyEvent.VK_UP, ActionEvent.ALT_MASK));
-	MoveRowsDownAction moveSelectionDownAction = new MoveRowsDownAction("Move file down", null, null, null, KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, ActionEvent.ALT_MASK));
-	DuplicateRowsAction duplicateSelectionAction = new DuplicateRowsAction("Duplicate file(s)", null, null, null, KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.CTRL_MASK));
-	UndoDeletionAction undoDeletionAction = new UndoDeletionAction("Undo deletion", null, null, null, KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
-	OpenFileAction openFileAction = new OpenFileAction("Open selected file(s)", null, null);
+
+    ImageIcon deleteIcon = new ImageIcon(getClass().getResource("/res/actions/delete.png"));
+	ImageIcon moveUpIcon = new ImageIcon(getClass().getResource("/res/actions/move-up.png"));
+	ImageIcon moveDownIcon = new ImageIcon(getClass().getResource("/res/actions/move-down.png"));
+	ImageIcon dupliIcon = new ImageIcon(getClass().getResource("/res/actions/duplicate.png"));
+	ImageIcon undoIcon = new ImageIcon(getClass().getResource("/res/actions/undo.png"));
+	ImageIcon openIcon = new ImageIcon(getClass().getResource("/res/actions/open.png"));
+
+	DeleteRowsAction deleteSelectedRowsAction = new DeleteRowsAction("Delete selected file(s)", deleteIcon ,null, null, KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
+	MoveRowsUpAction moveSelectionUpAction = new MoveRowsUpAction("Move file up", moveUpIcon, null, null, KeyStroke.getKeyStroke(KeyEvent.VK_UP, ActionEvent.ALT_MASK));
+	MoveRowsDownAction moveSelectionDownAction = new MoveRowsDownAction("Move file down", moveDownIcon, null, null, KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, ActionEvent.ALT_MASK));
+	DuplicateRowsAction duplicateSelectionAction = new DuplicateRowsAction("Duplicate file(s)", dupliIcon, null, null, KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.CTRL_MASK));
+	UndoDeletionAction undoDeletionAction = new UndoDeletionAction("Undo deletion", undoIcon, null, null, KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
+	OpenFileAction openFileAction = new OpenFileAction("Open selected file(s)", openIcon, null, null, KeyStroke.getKeyStroke(KeyEvent.VK_ENTER,0));
 
 	public MainWindow(PdfWorkspace works) {
 
@@ -59,12 +69,14 @@ public class MainWindow extends JFrame{
 		ButtonListener buttonListener = new ButtonListener();
 		menuBar = new JMenuBar();
 
-		// Open Menu
-		openMenu = new JMenu("Open");
-		openMenu.setMnemonic(KeyEvent.VK_O);
-		openFiles = new JMenuItem("Open files");
-		openFiles.addActionListener(buttonListener);
-		openFiles.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
+		// Add Menu
+		addMenu = new JMenu("Add");
+		addMenu.setMnemonic(KeyEvent.VK_O);
+		addFiles = new JMenuItem("Add files");
+		addFiles.addActionListener(buttonListener);
+		addFiles.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
+		ImageIcon addIcon = new ImageIcon(getClass().getResource("/res/actions/add.png"));
+		addFiles.setIcon(addIcon);
 
 		// Selection Menu
 		selectionMenu = new JMenu("Selection");
@@ -77,8 +89,12 @@ public class MainWindow extends JFrame{
 
 		mergeFiles = new JMenuItem("Merge files");
 		mergeFiles.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, ActionEvent.CTRL_MASK));
+		ImageIcon mergeIcon = new ImageIcon(getClass().getResource("/res/actions/merge.png"));
+		mergeFiles.setIcon(mergeIcon);
 
 		watermarkFiles = new JMenuItem("Watermark files");
+		ImageIcon wtrmkIcon = new ImageIcon(getClass().getResource("/res/actions/watermark.png"));
+		watermarkFiles.setIcon(wtrmkIcon);
 
 		fileChooser = new JFileChooser();
 		fileChooser.setMultiSelectionEnabled(true);
@@ -95,6 +111,45 @@ public class MainWindow extends JFrame{
 		fileTable.setFillsViewportHeight(true);
 		fileTable.setModel(tableModel);
 
+		// Remove default ENTER-KEY behavior
+		fileTable.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+				.put(KeyStroke.getKeyStroke("ENTER"), "none");
+
+		// Drag n Drop
+		fileTable.setDropTarget(new DropTarget() {
+			public synchronized void drop(DropTargetDropEvent evt) {
+				try {
+					evt.acceptDrop(DnDConstants.ACTION_COPY);
+					Boolean allFilesCorrect = true;
+					ArrayList<File> droppedFiles = (ArrayList<File>) evt.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
+
+					for (File file : droppedFiles) {
+
+						// Get extension
+						String extension = " ";
+						int i = file.getName().lastIndexOf('.');
+						if (i >= 0) { extension = file.getName().substring(i+1); } // Has extension
+						else { allFilesCorrect = false; } // Does not have extension
+
+						// Check if PDF and add to workspace
+						if(extension.equals("pdf")) {
+							works.addFileToWorkspace(new PdfFile(file, PdfWorkspace.totalFiles));
+							tableModel.updateData(workspace.getAllFiles());
+						}else{
+							allFilesCorrect = false;
+						}
+					}
+
+					if(!allFilesCorrect)
+						JOptionPane.showMessageDialog(null, "Could not add all files\nOnly PDF files can be added into the workspace!", "Error!", JOptionPane.ERROR_MESSAGE);
+
+					evt.dropComplete(true);
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+		});
+
 		PageCellRenderer leftAlignedRenderer = new  PageCellRenderer(works);
 		leftAlignedRenderer.setHorizontalAlignment(JLabel.LEFT);
 
@@ -107,6 +162,30 @@ public class MainWindow extends JFrame{
 		fileTable.getColumnModel().getColumn(2).setCellRenderer(new PageCellRenderer(works));
 		fileTable.setAutoCreateRowSorter(true);
 		fileTablePane = new JScrollPane(fileTable);
+
+		// Table Double-Click
+		fileTable.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent mouseEvent) {
+				JTable table =(JTable) mouseEvent.getSource();
+				Point point = mouseEvent.getPoint();
+				int row = table.rowAtPoint(point);
+				int col = table.columnAtPoint(point);
+
+				// If double click
+				// And double click not on the editable columns (pages & include)
+				if (mouseEvent.getClickCount() == 2 && col != 2 && col != 3) {
+					int selectedRow = fileTable.getSelectedRow();
+					if(selectedRow > -1) {
+						try{
+							Desktop.getDesktop().open(new File(workspace.getFile(row).getPath()));
+						}catch(java.io.IOException | java.lang.IllegalArgumentException ex){
+							JOptionPane.showMessageDialog(null, "Could not open file.", "Error!", JOptionPane.ERROR_MESSAGE);
+						}
+					}
+
+				}
+			}
+		});
 
 		// Table Right-Click Menu
 		tableMenu = new JPopupMenu();
@@ -123,7 +202,7 @@ public class MainWindow extends JFrame{
 
 
 	    // Component setup
-		openMenu.add(openFiles);
+		addMenu.add(addFiles);
 
 		editMenu.add(mergeFiles);
 		editMenu.add(watermarkFiles);
@@ -133,8 +212,10 @@ public class MainWindow extends JFrame{
 		selectionMenu.add(moveSelectionDownAction);
 		selectionMenu.add(duplicateSelectionAction);
 		selectionMenu.add(undoDeletionAction);
+		selectionMenu.add(new JSeparator());
+		selectionMenu.add(openFileAction);
 
-		menuBar.add(openMenu);
+		menuBar.add(addMenu);
 		menuBar.add(editMenu);
 		menuBar.add(selectionMenu);
 
@@ -146,12 +227,12 @@ public class MainWindow extends JFrame{
 
 		this.setTitle("PDFusion Workspace");
 		ArrayList<Image> icons = new ArrayList<>();
-		icons.add(new ImageIcon(getClass().getResource("/res/PDFusion_logo_16.png")).getImage());
-		icons.add(new ImageIcon(getClass().getResource("/res/PDFusion_logo_20.png")).getImage());
-		icons.add(new ImageIcon(getClass().getResource("/res/PDFusion_logo_32.png")).getImage());
-		icons.add(new ImageIcon(getClass().getResource("/res/PDFusion_logo_40.png")).getImage());
-		icons.add(new ImageIcon(getClass().getResource("/res/PDFusion_logo_64.png")).getImage());
-		icons.add(new ImageIcon(getClass().getResource("/res/PDFusion_logo_128.png")).getImage());
+		icons.add(new ImageIcon(getClass().getResource("/res/logo/PDFusion_logo_16.png")).getImage());
+		icons.add(new ImageIcon(getClass().getResource("/res/logo/PDFusion_logo_20.png")).getImage());
+		icons.add(new ImageIcon(getClass().getResource("/res/logo/PDFusion_logo_32.png")).getImage());
+		icons.add(new ImageIcon(getClass().getResource("/res/logo/PDFusion_logo_40.png")).getImage());
+		icons.add(new ImageIcon(getClass().getResource("/res/logo/PDFusion_logo_64.png")).getImage());
+		icons.add(new ImageIcon(getClass().getResource("/res/logo/PDFusion_logo_128.png")).getImage());
 		this.setIconImages(icons);
 
 		this.setVisible(true);
@@ -164,7 +245,7 @@ public class MainWindow extends JFrame{
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 
-			if (arg0.getSource().equals(openFiles)) { // Open files and add them into the workspace
+			if (arg0.getSource().equals(addFiles)) { // Open files and add them into the workspace
 
 				int returnVal = fileChooser.showOpenDialog(MainWindow.this);
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -227,9 +308,11 @@ public class MainWindow extends JFrame{
 			int selectedRow = fileTable.getSelectedRow();
 			if(selectedRow > -1) {
 				int[] selectedRows = fileTable.getSelectedRows();
+                int[] selectedRowsCRIM = new int[selectedRows.length]; // SelectedRowsConvertedRowIndexModel
+                for(int i = 0; i < selectedRows.length; i++)
+                    selectedRowsCRIM[i] = fileTable.convertColumnIndexToModel(selectedRows[i]);
 
-
-				if(workspace.removeFilesFromWorkspace(selectedRows)) {
+				if(workspace.removeFilesFromWorkspace(selectedRowsCRIM)) {
 					tableModel.fireTableRowsDeleted(selectedRows[0], selectedRows[selectedRows.length - 1]);
 
 					// If the deleted file was the only file then we have nothing to select
@@ -350,17 +433,20 @@ public class MainWindow extends JFrame{
 	/**
 	 * Opens all the selected files
 	 */
-	class OpenFileAction extends AbstractAction {
+	 class OpenFileAction extends AbstractAction {
 
 		private static final long serialVersionUID = 7657012530064869813L;
 
-		public OpenFileAction(String text, ImageIcon icon, String desc) {
+		public OpenFileAction(String text, ImageIcon icon,
+							  String desc, Integer mnemonic, KeyStroke accelerator) {
+
 			super(text, icon);
 			putValue(SHORT_DESCRIPTION, desc);
+			putValue(MNEMONIC_KEY, mnemonic);
+			putValue(ACCELERATOR_KEY, accelerator);
 		}
 
 		public void actionPerformed(ActionEvent e){
-
 			int selectedRow = fileTable.getSelectedRow();
 			if(selectedRow > -1) {
 				int[] selectedRows = fileTable.getSelectedRows();
@@ -373,7 +459,6 @@ public class MainWindow extends JFrame{
 					}
 				}
 			}
-
 		}
 	}
 }

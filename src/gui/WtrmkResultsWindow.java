@@ -49,12 +49,12 @@ public class WtrmkResultsWindow extends JFrame{
         this.setTitle("PDFusion - Results...");
 
         ArrayList<Image> icons = new ArrayList<>();
-        icons.add(new ImageIcon(getClass().getResource("/res/PDFusion_logo_16.png")).getImage());
-        icons.add(new ImageIcon(getClass().getResource("/res/PDFusion_logo_20.png")).getImage());
-        icons.add(new ImageIcon(getClass().getResource("/res/PDFusion_logo_32.png")).getImage());
-        icons.add(new ImageIcon(getClass().getResource("/res/PDFusion_logo_40.png")).getImage());
-        icons.add(new ImageIcon(getClass().getResource("/res/PDFusion_logo_64.png")).getImage());
-        icons.add(new ImageIcon(getClass().getResource("/res/PDFusion_logo_128.png")).getImage());
+        icons.add(new ImageIcon(getClass().getResource("/res/logo/PDFusion_logo_16.png")).getImage());
+        icons.add(new ImageIcon(getClass().getResource("/res/logo/PDFusion_logo_20.png")).getImage());
+        icons.add(new ImageIcon(getClass().getResource("/res/logo/PDFusion_logo_32.png")).getImage());
+        icons.add(new ImageIcon(getClass().getResource("/res/logo/PDFusion_logo_40.png")).getImage());
+        icons.add(new ImageIcon(getClass().getResource("/res/logo/PDFusion_logo_64.png")).getImage());
+        icons.add(new ImageIcon(getClass().getResource("/res/logo/PDFusion_logo_128.png")).getImage());
         this.setIconImages(icons);
 
         this.setContentPane(container);
